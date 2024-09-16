@@ -295,7 +295,7 @@ async function calculateFirstAvailableInterval(data,arrTimers){
       document.getElementById('response3').innerHTML+=`<div>СУРР: Время ответа от СУРР: ${datesStartTime.toLocaleString()}</div>`;
       // document.getElementById('response3').innerHTML+=`<div>Время запроса сеанса связи ${datesStartTime.toLocaleString()}</div>`;
       if (document.querySelector('.duplex-checkbox').checked) {
-          postOcFrREs(result.satellite_id,document.querySelector('.duplex-checkbox').value,1,1)
+          postOcFrREs(result.satellite_id,--document.querySelector('.duplex-checkbox').value,0,1)
             .then(respons=>{
              const randTime=getRandomNumber(60000,120000);
               const dateStartTime=new Date();
@@ -304,13 +304,13 @@ async function calculateFirstAvailableInterval(data,arrTimers){
               document.getElementById('response3').innerHTML+=`<div>СУРР: Частотный ресурс: ${result.satellite_name} на передачу: канал
               ${respons.Nomera_zanyatyih_yacheek[0][1]} тайм слот  ${respons.Nomera_zanyatyih_yacheek[0][0]}, 
               на прием: канал
-              ${respons.Nomera_zanyatyih_yacheek[1][1]} тайм слот ${respons.Nomera_zanyatyih_yacheek[1][0]}</div>`;
+              ${respons.Nomera_zanyatyih_yacheek[0][1]} тайм слот ${respons.Nomera_zanyatyih_yacheek[0][0]}</div>`;
               document.querySelector('.information_request').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
               document.querySelector('.information_request').innerHTML+=`<div> 
               СУРР: Частотный ресурс:  ${result.satellite_name} на передачу: канал
               ${respons.Nomera_zanyatyih_yacheek[0][1]} тайм слот  ${respons.Nomera_zanyatyih_yacheek[0][0]}, 
               на прием: канал
-              ${respons.Nomera_zanyatyih_yacheek[1][1]} тайм слот ${respons.Nomera_zanyatyih_yacheek[1][0]}
+              ${respons.Nomera_zanyatyih_yacheek[0][1]} тайм слот ${respons.Nomera_zanyatyih_yacheek[0][0]}
               </div> `;
               console.log(respons.Nomera_zanyatyih_yacheek[0]);
               if (document.querySelector('.time_call-max').checked) {
@@ -567,8 +567,8 @@ async function calculateFirstAvailableInterval(data,arrTimers){
               "ID_RSS1": 0,
               "Canal1": respons.Nomera_zanyatyih_yacheek[0][1],
               "Time_Slot1": respons.Nomera_zanyatyih_yacheek[0][0],
-              "Canal_pr1": respons.Nomera_zanyatyih_yacheek[1][1],
-              "Time_Slot_pr1": respons.Nomera_zanyatyih_yacheek[1][0],
+              "Canal_pr1": respons.Nomera_zanyatyih_yacheek[0][1],
+              "Time_Slot_pr1": respons.Nomera_zanyatyih_yacheek[0][0],
               "Tlf2": "string",
               "ID_Abonent_T2": ++valueAbonent,
               "ID_KA2": 0,
