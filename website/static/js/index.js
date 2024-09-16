@@ -295,7 +295,8 @@ async function calculateFirstAvailableInterval(data,arrTimers){
       document.getElementById('response3').innerHTML+=`<div>СУРР: Время ответа от СУРР: ${datesStartTime.toLocaleString()}</div>`;
       // document.getElementById('response3').innerHTML+=`<div>Время запроса сеанса связи ${datesStartTime.toLocaleString()}</div>`;
       if (document.querySelector('.duplex-checkbox').checked) {
-          postOcFrREs(result.satellite_id,--document.querySelector('.duplex-checkbox').value,0,1)
+        let valDuplex=document.querySelector('.duplex-checkbox').value;
+          postOcFrREs(result.satellite_id,valDuplex-1,0,1)
             .then(respons=>{
              const randTime=getRandomNumber(60000,120000);
               const dateStartTime=new Date();
