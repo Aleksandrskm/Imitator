@@ -295,7 +295,7 @@ async function calculateFirstAvailableInterval(data,arrTimers){
       document.getElementById('response3').innerHTML+=`<div>СУРР: Время ответа от СУРР: ${datesStartTime.toLocaleString()}</div>`;
       // document.getElementById('response3').innerHTML+=`<div>Время запроса сеанса связи ${datesStartTime.toLocaleString()}</div>`;
       if (document.querySelector('.duplex-checkbox').checked) {
-          postOcFrREs(result.satellite_id,document.querySelector('.duplex-checkbox').value,1,1)
+          postOcFrREs(result.satellite_id,--document.querySelector('.duplex-checkbox').value,0,1)
             .then(respons=>{
              const randTime=getRandomNumber(60000,120000);
               const dateStartTime=new Date();
@@ -304,13 +304,13 @@ async function calculateFirstAvailableInterval(data,arrTimers){
               document.getElementById('response3').innerHTML+=`<div>СУРР: Частотный ресурс: ${result.satellite_name} на передачу: канал
               ${respons.Nomera_zanyatyih_yacheek[0][1]} тайм слот  ${respons.Nomera_zanyatyih_yacheek[0][0]}, 
               на прием: канал
-              ${respons.Nomera_zanyatyih_yacheek[1][1]} тайм слот ${respons.Nomera_zanyatyih_yacheek[1][0]}</div>`;
+              ${respons.Nomera_zanyatyih_yacheek[0][1]} тайм слот ${respons.Nomera_zanyatyih_yacheek[0][0]}</div>`;
               document.querySelector('.information_request').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
               document.querySelector('.information_request').innerHTML+=`<div> 
               СУРР: Частотный ресурс:  ${result.satellite_name} на передачу: канал
               ${respons.Nomera_zanyatyih_yacheek[0][1]} тайм слот  ${respons.Nomera_zanyatyih_yacheek[0][0]}, 
               на прием: канал
-              ${respons.Nomera_zanyatyih_yacheek[1][1]} тайм слот ${respons.Nomera_zanyatyih_yacheek[1][0]}
+              ${respons.Nomera_zanyatyih_yacheek[0][1]} тайм слот ${respons.Nomera_zanyatyih_yacheek[0][0]}
               </div> `;
               console.log(respons.Nomera_zanyatyih_yacheek[0]);
               if (document.querySelector('.time_call-max').checked) {
@@ -380,7 +380,7 @@ async function calculateFirstAvailableInterval(data,arrTimers){
                 document.getElementById('response3').innerHTML+=`<div>СОВ: Время запроса:${new Date().toLocaleString()}</div>`;
                 document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
                 document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-                addArchivalSession(responses.ID,String(dataEndCall),time,time,1);
+                addArchivalSession(responses.ID,String(dataEndCall.toISOString()),time,time,1);
               }); 
             },Number(time)*1000);
           if (document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов'){
@@ -408,7 +408,8 @@ async function calculateFirstAvailableInterval(data,arrTimers){
                   document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
                   document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
                   const timeCall=Math.round(Number((dataEndCall-new Date(data.start_datetime_iso))/1000));
-                  addArchivalSession(responses.ID,String(dataEndCall),timeCall,timeCall,7);
+                  console.log(timeCall);
+                  addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
                   //   const dataSession={
                 //     "ID_Zapros_Seans_Tek": 0,
                 //     "Tlf1": "+79002000022",
@@ -511,7 +512,7 @@ async function calculateFirstAvailableInterval(data,arrTimers){
                 font-size: calc(1.2rem);">Завершение сеанса связи:</div>`;
                 document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
                 document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-                addArchivalSession(responses.ID,String(dataEndCall),time,time,1);
+                addArchivalSession(responses.ID,String(dataEndCall.toISOString()),time,time,1);
               }); 
                     },Number(time)*1000);
                     const btnEnd=document.getElementById('task-btn_cansel_flow');
@@ -566,8 +567,8 @@ async function calculateFirstAvailableInterval(data,arrTimers){
               "ID_RSS1": 0,
               "Canal1": respons.Nomera_zanyatyih_yacheek[0][1],
               "Time_Slot1": respons.Nomera_zanyatyih_yacheek[0][0],
-              "Canal_pr1": respons.Nomera_zanyatyih_yacheek[1][1],
-              "Time_Slot_pr1": respons.Nomera_zanyatyih_yacheek[1][0],
+              "Canal_pr1": respons.Nomera_zanyatyih_yacheek[0][1],
+              "Time_Slot_pr1": respons.Nomera_zanyatyih_yacheek[0][0],
               "Tlf2": "string",
               "ID_Abonent_T2": ++valueAbonent,
               "ID_KA2": 0,
@@ -604,7 +605,8 @@ async function calculateFirstAvailableInterval(data,arrTimers){
                 document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
                 document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
                 const timeCall=Math.round(Number(randTime/1000));
-                addArchivalSession(responses.ID,String(dataEndCall),timeCall,timeCall,1);
+                console.log(timeCall);
+                addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,1);
               });
               
             },randTime);
@@ -630,8 +632,15 @@ async function calculateFirstAvailableInterval(data,arrTimers){
                   document.getElementById('response3').innerHTML+=` <div>СОВ: Время запроса:${new Date().toLocaleString()}</div>`;
                   document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
                   document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-                  const timeCall=Math.round(Number(dataEndCall-new Date(data.start_datetime_iso)/1000));
-                  addArchivalSession(responses.ID,String(dataEndCall),timeCall,timeCall,7);
+                  let timeCall=Math.round(Number((dataEndCall-new Date(data.start_datetime_iso))/1000));
+                  if (timeCall<0) {
+                    timeCall*=-1;
+                  }
+                  console.log((timeCall));
+                  console.log(typeof(timeCall));
+                  console.log(dataEndCall);
+                  addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
+                  console.log(data.start_datetime_iso);
                   //   const dataSession={
                 //     "ID_Zapros_Seans_Tek": 0,
                 //     "Tlf1": "+79002000022",
@@ -1160,7 +1169,7 @@ async function calculateFirstAvailableInterval(data,arrTimers){
                 document.getElementById('response3').innerHTML+=`<div>СОВ: Время запроса: ${new Date().toLocaleString()} секунд</div>`;
                 document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
                 document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-                addArchivalSession(responses.ID,String(dataEndCall),time,time,1);
+                addArchivalSession(responses.ID,String(dataEndCall.toISOString()),time,time,1);
               });  
             },Number(time)*1000);
             if(document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов'){
@@ -1187,7 +1196,8 @@ async function calculateFirstAvailableInterval(data,arrTimers){
                     document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
                     document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
                     const timeCall=Math.round(Number(dataEndCall-new Date(data.start_datetime_iso)/1000));
-                    addArchivalSession(responses.ID,String(dataEndCall),timeCall,timeCall,7);
+                    console.log(timeCall);
+                    addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
                     //   const dataSession={
                   //     "ID_Zapros_Seans_Tek": 0,
                   //     "Tlf1": "+79002000022",
@@ -1337,7 +1347,8 @@ async function calculateFirstAvailableInterval(data,arrTimers){
                 document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
                 document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
                 const timeCall=Math.round(Number(randTime/1000));
-                    addArchivalSession(responses.ID,String(dataEndCall),timeCall,timeCall,1);
+                console.log(timeCall);
+                    addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,1);
               });
               
             },randTime);
@@ -1368,7 +1379,8 @@ async function calculateFirstAvailableInterval(data,arrTimers){
                   document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
                   document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
                   const timeCall=Math.round(Number((dataEndCall-new Date(data.start_datetime_iso))/1000));
-                  addArchivalSession(responses.ID,String(dataEndCall),timeCall,timeCall,7);
+                  console.log(timeCall);
+                  addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
                   //   const dataSession={
                 //     "ID_Zapros_Seans_Tek": 0,
                 //     "Tlf1": "+79002000022",
@@ -1799,9 +1811,28 @@ if (document.querySelector('h2')) {
     // document.getElementById('latitude-res').innerHTML+=document.getElementById('lat3').value;
     //   document.getElementById('long-res').innerHTML+=document.getElementById('lon3').value;
     document.getElementById("task-btn_cansel").disabled = true;
+    const dateControl = document.querySelector('input[type="date"]');
+    dateControl.value=getDateTime().slice(0,10);
+    const timeControl = document.querySelector('input[type="time"]');
+    let numberTime=Number(getDateTime().substring(11,13));
+    let timeVal=getDateTime().substring(13,19);
+    if (numberTime>=10) {
+      timeControl.value=`${numberTime}${timeVal}`;
+    }
+    else{
+      timeControl.value=`0${numberTime}${timeVal}`;
+    }
+   
+    console.log(numberTime);
+    console.log(timeVal);
+    // timeControl.value=getDateTime().substring(11,19);
+    console.log(dateControl.value);
+    console.log(timeControl.value);
+    let timeSelf=`${dateControl.value}T0${numberTime-3}${timeControl.value.substring(2,10)}.000Z`;
+    console.log(timeSelf);
+    console.log(`${dateControl.value}T${timeControl.value}Z.000`);
     const btnStartSim=document.getElementById('task-btn_sim');
     btnStartSim.addEventListener('click',()=>{
-      
       const data = {
         'point':{
               "name":'',
@@ -1813,6 +1844,14 @@ if (document.querySelector('h2')) {
             "min_duration_in_sec":document.getElementById('min-call-time').value
           
       }
+      if (document.querySelector('.timer_call-current').checked) {
+         data.start_datetime_iso= new Date().toISOString();
+      }
+      else{
+        timeSelf=`${dateControl.value}T${timeControl.value}.000Z`;
+        data.start_datetime_iso= timeSelf;
+      }
+      
       // document.getElementById('response3').innerHTML='';
       if (document.querySelector('.information_request')) {
         // document.querySelector('.information_request').remove();
@@ -1826,6 +1865,7 @@ if (document.querySelector('h2')) {
         document.getElementById("task-btn_cansel").disabled = false;
       });
     });
+   
   }
   else if (document.querySelector('h2').innerHTML=='Имитатор потока вызовов') {
     const btnFlawStart=document.querySelector('#task-btn_sim_flow');

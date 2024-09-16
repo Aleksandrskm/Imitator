@@ -807,3 +807,15 @@ body {
 .closes{
     margin-top: 70%;
 }
+input[type='date'] {
+    background: #f2f2f2;
+    color: #000;
+    font-family: Arial;
+    width: 100px;
+}
+input[type='time'] {
+    background: #f2f2f2;
+    color: #000;
+    font-family: Arial;
+    width: 100px;
+}
