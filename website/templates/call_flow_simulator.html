@@ -13,9 +13,17 @@
         <div class="row_com">
             
             <div class="column2_com">
-                
+                 
         <div class="div-abonent">Данные абонента</div>
                 <br>
+            <div class="data-abonent">
+                <span>Абонент:</span> <select  class="select" name="abonents" id="abonent-select">
+                    <option value="0">Выберите Абонента</option>
+                    <option value="1">Абонент 1</option>
+                    <option value="2">Абонент 2</option>
+                    </select>
+                    <span>Номер телефона: </span><span class="number hide">89000000001</span><span class="number hide">89000000001</span><span class="number hide">89000000002</span>
+            </div> 
         <div class="data-abonent">
             
             <span>Широта, градусы</span>
@@ -47,10 +55,10 @@
         </div>
         <div class="radio-dvi">
             <span>Вид связи:</span>
-            <input type="radio" value="1" name="radio" class="simple-checkbox">
-            <span>Симплекс прием</span>
+            <!-- <input type="radio" value="1" name="radio" class="simple-checkbox">
+            <span>Симплекс прием</span> -->
             <input type="radio" value="1" name="radio" class="simplex-checkbox">
-            <span>Симплекс передача</span>
+            <span>Симплекс</span>
             <input type="radio" value="2" name="radio" class="duplex-checkbox" checked>
             <span>Дуплекс</span>
         </div>
@@ -82,7 +90,7 @@
             <button id="task-btn_cansel_flow">Остановить</button>
         </div>
 
-        <div class="header-log">Доступный КА::</div>
+        <div class="header-log"></div>
         
         <span id="response3"></span>
 
