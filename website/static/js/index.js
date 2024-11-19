@@ -105,17 +105,18 @@ function createBeginningLog(dateStartTime,respons,result){
   </div> `;
   console.log(respons.Nomera_zanyatyih_yacheek[0]);
 }
-function addListenerImitator(selectorBtn,responses,respons,result,data,timer,dataVyz){
-  const btnEnd=document.getElementById(selectorBtn);
-  btnEnd.addEventListener('click',()=>{
-    clearTimeout(timer);
+function clearFrecRes(selectorBtn,responses,respons,result,data,timer,dataVyz){
+  clearTimeout(timer);
     let starTime=data.start_datetime_iso;
     if (document.querySelector('h2').innerHTML=='Имитатор потока вызовов'){
       countSession=document.getElementById('quantity_calls').value;
       starTime=dataVyz;
     }
     const data_cell=respons.Nomera_zanyatyih_yacheek.concat(respons.Nomera_zanyatyih_yacheek_pr);
-    postRelaeseFrRes(data_cell,result.satellite_id).then(()=>{
+    postRelaeseFrRes(data_cell,result.satellite_id).then((res)=>{
+      if (!res) {
+        
+      
       const dataEndCall=new Date();
       document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
       document.getElementById('response3').innerHTML+=`<br><div style="
@@ -134,14 +135,24 @@ function addListenerImitator(selectorBtn,responses,respons,result,data,timer,dat
       const timeCall=Math.round(Number((dataEndCall-new Date(starTime))/1000));
       console.log(timeCall);
       addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
-      btnEnd.disabled = true;
+      document.getElementById(selectorBtn).disabled = true;
+      }
     });
-             
-  },{once:true});
+}
+function addListenerImitator(selectorBtn,responses,respons,result,data,timer,dataVyz){
+  const btnEnd=document.getElementById(selectorBtn);
+  
+  btnEnd.addEventListener('click',clearFrecRes.bind(null,selectorBtn,responses,respons,result,data,timer,dataVyz),{once:true});
 }
 function createLogImitator(dateStartTime,datesStartTime,respons,result,data){
   console.log(respons.Nomera_zanyatyih_yacheek[0]);
-  const time =result.datetime_period.duration_in_sec;
+  let time;
+  if (document.querySelector('.time_call-max').checked){
+     time =result.datetime_period.duration_in_sec;
+  }
+  else{
+    time =getRandomNumber(60000,120000);
+  }
   let numPhone ='';
   if(document.getElementById('abonent-select')){
     console.log(document.getElementById('abonent-select').value);
@@ -150,7 +161,6 @@ function createLogImitator(dateStartTime,datesStartTime,respons,result,data){
       if (number.classList.contains('show') ){
         numPhone=number.innerHTML;
       }
-      console.log('1');
       console.log(numPhone);
     });
   }
@@ -161,7 +171,12 @@ function createLogImitator(dateStartTime,datesStartTime,respons,result,data){
       valueAbonent+=1;
       }
   }
-  document.getElementById('response3').innerHTML+=`<div>СОВ:  Прогнозируемая продолжительность сеанса ,сек: ${time}</div>`;
+  if (document.querySelector('.time_call-max').checked){
+    document.getElementById('response3').innerHTML+=`<div>СОВ:  Прогнозируемая продолжительность сеанса ,сек: ${time}</div>`;
+  }
+  else{
+    document.getElementById('response3').innerHTML+=`<div>СОВ:  Прогнозируемая продолжительность сеанса ,сек: ${time/1000}</div>`;
+  }
   const dataSession={
     "ID_Zapros_Seans_Tek": 0,
     "Tlf1": String(numPhone),
@@ -190,14 +205,39 @@ function createLogImitator(dateStartTime,datesStartTime,respons,result,data){
     "Id_Seans_Rez": 1
   }
       postActiveSession(dataSession).then((responses)=>{
+        let endTimer;
+        if (document.querySelector('.time_call-max').checked)
+        {
+          endTimer=time*1000;
+        }
+        else{
+          endTimer=time;
+        }
+        
         const timer=setTimeout(function(){
+          
+          // if (document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов'){
+          //   // document.getElementById("task-btn_cansel").disabled=true;
+          //   document.getElementById("task-btn_cansel").removeEventListener('click',clearFrecRes);
+          // }
+          // else{
+          //   // document.getElementById("task-btn_cansel_flow").disabled=true;
+          //   document.getElementById("task-btn_cansel_flow").removeEventListener('click',clearFrecRes)
+
+          // }
           const data_cell=respons.Nomera_zanyatyih_yacheek.concat(respons.Nomera_zanyatyih_yacheek_pr);
           postRelaeseFrRes(data_cell,result.satellite_id).then(()=>{
             document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
             document.querySelector('.information_request').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса</div>`;
             document.querySelector('.information_request').innerHTML+=`<div>СОВ: Время запроса:${new Date().toLocaleString()}</div>`;
             document.querySelector('.information_request').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-            document.querySelector('.information_request').innerHTML+=`<div>CУРР: Продолжительность вызова ${time} секунд</div>`;
+            if (document.querySelector('.time_call-max').checked){
+              document.querySelector('.information_request').innerHTML+=`<div>CУРР: Продолжительность вызова ${time} секунд</div>`;
+            }
+            else{
+              document.querySelector('.information_request').innerHTML+=`<div>CУРР: Продолжительность вызова ${time/1000} секунд</div>`;
+            }
+            
             const dataEndCall=new Date();
             document.querySelector('.information_request').innerHTML+=` <div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}:</div>`;
             document.getElementById('response3').innerHTML+=`<br><div style="
@@ -207,8 +247,17 @@ function createLogImitator(dateStartTime,datesStartTime,respons,result,data){
             document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
             document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
             addArchivalSession(responses.ID,String(dataEndCall.toISOString()),time,time,1);
+            if (document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов'){
+              // document.getElementById("task-btn_cansel").disabled=true;
+              document.getElementById("task-btn_cansel").removeEventListener('click',clearFrecRes);
+            }
+            else{
+              // document.getElementById("task-btn_cansel_flow").disabled=true;
+              document.getElementById("task-btn_cansel_flow").removeEventListener('click',clearFrecRes)
+        
+            }
           }); 
-        },Number(time)*1000);
+        },Number(endTimer));
         if (document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов'){
           addListenerImitator("task-btn_cansel",responses,respons,result,data,timer);
         }
@@ -217,148 +266,11 @@ function createLogImitator(dateStartTime,datesStartTime,respons,result,data){
         }
     }); 
 }
-function createDuplexData(result,respons,datesStartTime,data){
+function createDataSessionCommunications(result,respons,datesStartTime,data){
   const randTime=getRandomNumber(60000,120000);
   const dateStartTime=new Date();
   createBeginningLog(dateStartTime,respons,result);
-  if (document.querySelector('.time_call-max').checked) {
-      createLogImitator(dateStartTime,datesStartTime,respons,result,data);
-  }
-  else{
-    let numPhone='';
-    if(document.getElementById('abonent-select')){
-     console.log(document.getElementById('abonent-select').value);
-      document.querySelectorAll('.number').forEach((number)=>{
-      console.log(number.innerHTML);
-      if (number.classList.contains('show')) {
-        numPhone=number.innerHTML;
-        }
-      console.log(numPhone);
-      });
-    }
-    let valueAbonent=0;
-    if (document.getElementById('abonent-select')) {
-      valueAbonent=Number(document.getElementById('abonent-select').value);
-      if (!valueAbonent) {
-        valueAbonent+=1;
-      }
-    }
-    console.log('1');
-    document.getElementById('response3').innerHTML+=`<div>СОВ:  Прогнозируемая продолжительность сеанса ,сек: ${randTime/1000}</div>`;
-    const dataSession={
-    "ID_Zapros_Seans_Tek": 0,
-    "Tlf1": String(numPhone),
-    "ID_Abonent_T1": valueAbonent,
-    "ID_KA1": result.satellite_id,
-    "ID_RSS1": 0,
-    "Canal1": respons.Nomera_zanyatyih_yacheek[0][1],
-    "Time_Slot1": respons.Nomera_zanyatyih_yacheek[0][0],
-    "Canal_pr1": respons.Nomera_zanyatyih_yacheek_pr[0][1],
-    "Time_Slot_pr1": respons.Nomera_zanyatyih_yacheek_pr[0][0],
-    "Tlf2": "string",
-    "ID_Abonent_T2": ++valueAbonent,
-    "ID_KA2": 0,
-    "ID_RSS2": 0,
-    "Canal2": 0,
-    "Time_Slot2": 0,
-    "Canal_pr2": 0,
-    "Time_Slot_pr2": 0,
-    "Data_Vyz": String(new Date(result.datetime_period.start_datetime_iso).toISOString()),
-    "Data_Otv": String(datesStartTime.toISOString()),
-    "Data_Beg": String(dateStartTime.toISOString()),
-   "Data_Beg_Razg": String(dateStartTime.toISOString()),
-   "Data_End": '',
-    "Time_Seans": '',
-    "Time_Razg": '',
-    "Id_Seans_Rez": 1
-    }
-    postActiveSession(dataSession).then((responses)=>{
-      const timer=setTimeout(function(){
-        const data_cell=respons.Nomera_zanyatyih_yacheek.concat(respons.Nomera_zanyatyih_yacheek_pr);
-        postRelaeseFrRes(data_cell,result.satellite_id).then(()=>{
-          document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-          document.querySelector('.information_request').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса</div>`;
-          document.querySelector('.information_request').innerHTML+=`<div>СОВ: Время запроса: ${new Date().toLocaleString()}</div>`;
-          document.querySelector('.information_request').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-          document.querySelector('.information_request').innerHTML+=`<div>СУРР: Продолжительность вызова ${randTime/1000} секунд</div>`;
-          const dataEndCall=new Date();
-          document.querySelector('.information_request').innerHTML+=` <div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}:</div>`;
-          document.getElementById('response3').innerHTML+=`<br><div style="
-          font-size: calc(1.2rem);">Завершение сеанса связи:</div>`;
-          document.getElementById('response3').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса</div>`;
-          document.getElementById('response3').innerHTML+=`<div>СОВ: Время запроса: ${new Date().toLocaleString()}</div>`;
-          document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-          document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-          const timeCall=Math.round(Number(randTime/1000));
-          console.log(timeCall);
-          addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,1);
-        }); 
-      },randTime);
-      if (document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов'){
-        const btnEnd=document.getElementById('task-btn_cansel');
-        btnEnd.addEventListener('click',()=>{
-          document.getElementById("task-btn_sim").disabled = true; 
-          clearTimeout(timer);
-          const data_cell=respons.Nomera_zanyatyih_yacheek.concat(respons.Nomera_zanyatyih_yacheek_pr);
-          postRelaeseFrRes(data_cell,result.satellite_id).then(()=>{
-          const dataEndCall=new Date();
-          document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-          document.querySelector('.information_request').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса</div>`;
-          document.querySelector('.information_request').innerHTML+=` <div>СОВ: Время запроса:${new Date().toLocaleString()}</div>`;
-          document.querySelector('.information_request').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-          document.querySelector('.information_request').innerHTML+=` <div>СУРР: Продолжительность вызова 
-          ${(dataEndCall-new Date(data.start_datetime_iso))/1000} секунд</div>`;
-          document.querySelector('.information_request').innerHTML+=` <div>СУРР: Время освобождения частотного ресурса: 
-          ${dataEndCall.toLocaleString()}</div> <br>`;
-          document.getElementById('response3').innerHTML+=`<br><div style="
-            font-size: calc(1.2rem);">Завершение сеанса связи:</div>`;
-          document.getElementById('response3').innerHTML+=`<div>СУРР: СОВ: Запрос на освобождение частотного ресурса</div>`;
-          document.getElementById('response3').innerHTML+=` <div>СОВ: Время запроса:${new Date().toLocaleString()}</div>`;
-          document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-          document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-          let timeCall=Math.round(Number((dataEndCall-new Date(data.start_datetime_iso))/1000));
-          if (timeCall<0) {
-            timeCall*=-1;
-          }
-          console.log((timeCall));
-          console.log(typeof(timeCall));
-          console.log(dataEndCall);
-          addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
-          console.log(data.start_datetime_iso);
-          });
-        document.getElementById("task-btn_sim").disabled = false;   
-        },{once:true});
-      }
-      else{
-        const btnEnd=document.getElementById('task-btn_cansel_flow');
-        btnEnd.addEventListener('click',()=>{
-          countSession=document.getElementById('quantity_calls').value;
-          clearTimeout(timer);
-          const data_cell=respons.Nomera_zanyatyih_yacheek.concat(respons.Nomera_zanyatyih_yacheek_pr);
-          postRelaeseFrRes(data_cell,result.satellite_id).then(()=>{
-            document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-            document.getElementById('response3').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-            const dataEndCall=new Date();
-            document.querySelector('.information_request').innerHTML+=` <div>СОВ: Запрос на освобождение частотного ресурса </div>`;
-            document.querySelector('.information_request').innerHTML+=` <div>СОВ: Время запроса:${new Date().toLocaleString()} </div>`;
-            document.querySelector('.information_request').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-            document.querySelector('.information_request').innerHTML+=` <div>СУРР Продолжительность вызова: 
-            ${(dataEndCall-new Date(dataSession.Data_Vyz))/1000} секунд</div>`;
-            document.querySelector('.information_request').innerHTML+=` <div>СУРР: Время освобождения частотного ресурса: 
-            ${dataEndCall.toLocaleString()}</div>`;
-            document.getElementById('response3').innerHTML+=` <div>СОВ: Запрос на освобождение частотного ресурса </div>`;
-            document.getElementById('response3').innerHTML+=` <div>СОВ: Время запроса:${new Date().toLocaleString()} </div>`;
-            document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-            document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-            const timeCall=Math.round(Number((dataEndCall-new Date(data.start_datetime_iso))/1000));
-            console.log(timeCall);
-            addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
-          });
-             
-        },{once:true});
-      }
-    });     
-  }
+  createLogImitator(dateStartTime,datesStartTime,respons,result,data);
 }
 // example usage: realtime clock
 setInterval(function(){
@@ -493,303 +405,12 @@ async function calculateFirstAvailableInterval(data){
         let valDuplex=document.querySelector('.duplex-checkbox').value;
           postOcFrREs(result.satellite_id,valDuplex-1,0,1)
             .then(respons=>{
-              createDuplexData(result,respons,datesStartTime,data);
+              createDataSessionCommunications(result,respons,datesStartTime,data);
             });
        }
       else if(document.querySelector('.simplex-checkbox').checked){
         postOcFrREs(result.satellite_id,document.querySelector('.simplex-checkbox').value,0,1).then(response=>{
-          const randTime=getRandomNumber(60000,120000);
-          const dateStartTime=new Date();
-          document.querySelector('.information_request').innerHTML+=`<div>СУРР: Время ответа от СУРР:  ${dateStartTime.toLocaleString()}
-          </div>`;
-          document.getElementById('response3').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString().toLocaleString()}</div>`;
-          document.getElementById('response3').innerHTML+=`<div>СУРР: Частотный ресурс: ${result.satellite_name} 
-          на передачу:канал ${response.Nomera_zanyatyih_yacheek[0][1]} тайм слот
-           ${response.Nomera_zanyatyih_yacheek[0][0]}</div>`;
-          document.querySelector('.information_request').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
-          document.querySelector('.information_request').innerHTML+=`<div>СУРР: Частотный ресурс: ${result.satellite_name} 
-          на прередачу :канал ${response.Nomera_zanyatyih_yacheek[0][1]} тайм слот
-           ${response.Nomera_zanyatyih_yacheek[0][0]}
-          на прием:канал ${response.Nomera_zanyatyih_yacheek_pr[0][1]} тайм слот
-           ${response.Nomera_zanyatyih_yacheek_pr[0][0]}
-           
-           </div> `;
-          if (document.querySelector('.time_call-max').checked) {
-            const time =result.datetime_period.duration_in_sec;
-            let numPhone='';
-            if(document.getElementById('abonent-select')){
-              console.log(document.getElementById('abonent-select').value);
-              document.querySelectorAll('.number').forEach((number)=>{
-                console.log(number.innerHTML);
-                if (number.classList.contains('show')) {
-                  numPhone=number.innerHTML;
-                }
-                  
-                  console.log(numPhone);
-                
-              });
-            }
-            let valueAbonent=0;
-           if (document.getElementById('abonent-select')) {
-            valueAbonent=Number(document.getElementById('abonent-select').value);
-            if (!valueAbonent) {
-              valueAbonent+=1;
-            }
-           }
-            document.getElementById('response3').innerHTML+=`<div>СОВ:  Прогнозируемая продолжительность сеанса ,сек: ${time}</div>`;
-            console.log(time);
-            const dataSession={
-              "ID_Zapros_Seans_Tek": 0,
-              "Tlf1": numPhone,
-              "ID_Abonent_T1": Number(valueAbonent),
-              "ID_KA1": result.satellite_id,
-              "ID_RSS1": 0,
-              "Canal1": response.Nomera_zanyatyih_yacheek[0][1],
-              "Time_Slot1": response.Nomera_zanyatyih_yacheek[0][0],
-              "Canal_pr1": response.Nomera_zanyatyih_yacheek_pr[0][1],
-              "Time_Slot_pr1": response.Nomera_zanyatyih_yacheek_pr[0][0],
-              "Tlf2": "string",
-              "ID_Abonent_T2": ++valueAbonent,
-              "ID_KA2": 0,
-              "ID_RSS2": 0,
-              "Canal2": 0,
-              "Time_Slot2": 0,
-              "Canal_pr2": 0,
-              "Time_Slot_pr2": 0,
-              "Data_Vyz": String(new Date(result.datetime_period.start_datetime_iso).toISOString()),
-              "Data_Otv": String(datesStartTime.toISOString()),
-              "Data_Beg": String(dateStartTime.toISOString()),
-              "Data_Beg_Razg": String(dateStartTime.toISOString()),
-              "Data_End": '',
-              "Time_Seans": '',
-              "Time_Razg": '',
-              "Id_Seans_Rez": 1
-          }
-          postActiveSession(dataSession).then((responses)=>{
-            const timer=setTimeout(function(){
-              const data_cell=response.Nomera_zanyatyih_yacheek.concat(response.Nomera_zanyatyih_yacheek_pr);
-              postRelaeseFrRes(data_cell).then(()=>{
-                document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса</div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>СОВ: Время запроса: ${new Date().toLocaleString()} секунд</div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>CУРР: Продолжительность вызова ${time} секунд</div>`;
-                const dataEndCall=new Date();
-                document.querySelector('.information_request').innerHTML+=` <div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}:</div> <br>`;
-                document.getElementById('response3').innerHTML+=`<br><div style="
-                font-size: calc(1.2rem);">Завершение сеанса связи:</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СОВ: Время запроса: ${new Date().toLocaleString()} секунд</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-                addArchivalSession(responses.ID,String(dataEndCall.toISOString()),time,time,1);
-              });  
-            },Number(time)*1000);
-            if(document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов'){
-              const btnEnd=document.getElementById('task-btn_cansel');
-              btnEnd.addEventListener('click',()=>{
-                document.getElementById("task-btn_sim").disabled = true;
-                
-                clearTimeout(timer);
-                const data_cell=response.Nomera_zanyatyih_yacheek.concat(response.Nomera_zanyatyih_yacheek_pr);
-                postRelaeseFrRes(data_cell,result.satellite_id).then(()=>{
-                  const dataEndCall=new Date();
-                  document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-                  document.querySelector('.information_request').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса</div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>СОВ: Время запроса: ${new Date().toLocaleString()} секунд</div>`;
-                    document.querySelector('.information_request').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                    // document.querySelector('.information_request').innerHTML+=`<div> Продолжительность вызова ${dataEndCall} секунд</div>`;
-                    document.querySelector('.information_request').innerHTML+=` <div>CУРР:Продолжительность вызова 
-                    ${(dataEndCall-new Date(data.start_datetime_iso))/1000} секунд</div>`;
-                    document.querySelector('.information_request').innerHTML+=` <div>СУРР: Время освобождения частотного ресурса: 
-                    ${dataEndCall.toLocaleString()}</div> <br>`;
-                    document.getElementById('response3').innerHTML+=`<br><div style="
-                    font-size: calc(1.2rem);">Завершение сеанса связи:</div>`;
-                    document.getElementById('response3').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса</div>`;
-                    document.getElementById('response3').innerHTML+=`<div>СУРР: СОВ: Время запроса:  ${(new Date().toLocaleString())}</div>`;
-                    document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                    document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-                    const timeCall=Math.round(Number(dataEndCall-new Date(data.start_datetime_iso)/1000));
-                    console.log(timeCall);
-                    addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
-                });
-                document.getElementById("task-btn_sim").disabled = false;   
-              },{once:true});
-            }
-            else{
-              const btnEnd=document.getElementById('task-btn_cansel_flow');
-            btnEnd.addEventListener('click',()=>{
-              countSession=document.getElementById('quantity_calls').value;
-              clearTimeout(timer);
-              const data_cell=response.Nomera_zanyatyih_yacheek.concat(response.Nomera_zanyatyih_yacheek_pr);
-              postRelaeseFrRes(data_cell,result.satellite_id).then(()=>{
-
-                document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-                document.getElementById('response3').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-              
-                const dataEndCall=new Date();
-                document.querySelector('.information_request').innerHTML+=` <div>СОВ: Запрос на освобождение частотного ресурса </div>`;
-                document.querySelector('.information_request').innerHTML+=` <div>СОВ: Время запроса:${new Date().toLocaleString()} </div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                document.querySelector('.information_request').innerHTML+=` <div>СУРР Продолжительность вызова: 
-                ${(dataEndCall-new Date(dataSession.Data_Vyz))/1000} секунд</div>`;
-                document.querySelector('.information_request').innerHTML+=` <div>СУРР: Время освобождения частотного ресурса: 
-                ${dataEndCall.toLocaleString()}</div>`;
-          
-                document.getElementById('response3').innerHTML+=` <div>СОВ: Запрос на освобождение частотного ресурса </div>`;
-                document.getElementById('response3').innerHTML+=` <div>СОВ: Время запроса:${new Date().toLocaleString()} </div>`;
-                document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-                const timeCall=Math.round(Number((dataEndCall-new Date(data.start_datetime_iso))/1000));
-                console.log(timeCall);
-                addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
-              });
-            },{once:true});
-            }
-          });
-            
-          }
-          else{
-            document.getElementById('response3').innerHTML+=`<div>СОВ:  Прогнозируемая продолжительность сеанса ,сек: ${randTime/1000}</div>`;
-            let numPhone='';
-            if(document.getElementById('abonent-select')){
-              console.log(document.getElementById('abonent-select').value);
-              document.querySelectorAll('.number').forEach((number)=>{
-                console.log(number.innerHTML);
-                if (number.classList.contains('show')) {
-                  numPhone=number.innerHTML;
-                }
-                  
-                  console.log(numPhone);
-                
-              });
-            }
-            let valueAbonent=0;
-           if (document.getElementById('abonent-select')) {
-            valueAbonent=Number(document.getElementById('abonent-select').value);
-           }
-            const dataSession={
-              "ID_Zapros_Seans_Tek": 0,
-              "Tlf1": numPhone,
-              "ID_Abonent_T1": result.satellite_id,
-              "ID_KA1": result.satellite_id,
-              "ID_RSS1": 0,
-              "Canal1": response.Nomera_zanyatyih_yacheek[0][1],
-              "Time_Slot1": response.Nomera_zanyatyih_yacheek[0][0],
-              "Canal_pr1": response.Nomera_zanyatyih_yacheek_pr[0][1],
-              "Time_Slot_pr1": response.Nomera_zanyatyih_yacheek_pr[0][0],
-              "Tlf2": "string",
-              "ID_Abonent_T2": 0,
-              "ID_KA2": 0,
-              "ID_RSS2": 0,
-              "Canal2": 0,
-              "Time_Slot2": 0,
-              "Canal_pr2": 0,
-              "Time_Slot_pr2": 0,
-              "Data_Vyz": String(new Date(result.datetime_period.start_datetime_iso).toISOString()),
-              "Data_Otv": String(datesStartTime.toISOString()),
-              "Data_Beg": String(dateStartTime.toISOString()),
-              "Data_Beg_Razg": String(dateStartTime.toISOString()),
-              "Data_End": '',
-              "Time_Seans": '',
-              "Time_Razg":'',
-              "Id_Seans_Rez": 0
-          }
-          postActiveSession(dataSession).then(responses=>{
-            setTimeout(function(){
-              const data_cell=response.Nomera_zanyatyih_yacheek.concat(response.Nomera_zanyatyih_yacheek_pr);
-              postRelaeseFrRes(data_cell,result.satellite_id).then(()=>{
-                document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса</div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>СОВ: Время запроса: ${new Date().toLocaleString()}</div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>CУРР: Продолжительность вызова ${randTime/1000} секунд</div>`;
-                const dataEndCall=new Date();
-                document.querySelector('.information_request').innerHTML+=` <div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}:</div> <br>`;
-                document.getElementById('response3').innerHTML+=`<br><div style="
-                font-size: calc(1.2rem);">Завершение сеанса связи:</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СОВ: Время запроса: ${new Date().toLocaleString()}</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-                const timeCall=Math.round(Number(randTime/1000));
-                console.log(timeCall);
-                    addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,1);
-              });
-              
-            },randTime);
-            if (document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов'){
-              const btnEnd=document.getElementById('task-btn_cansel');
-            btnEnd.addEventListener('click',()=>{
-              document.getElementById("task-btn_sim").disabled = true;
-              clearTimeout(timer);
-              document.getElementById('response3').innerHTML+=`<br><div style="
-                  font-size: calc(1.2rem);">Завершение сеанса связи:</div>`;
-                  document.getElementById('response3').innerHTML+=`<div >СОВ: Запрос на освобождение частотного ресурса</div>`;
-                  document.getElementById('response3').innerHTML+=`<div >СОВ: Время запроса:${new Date().toLocaleString()}</div>`;
-                  
-                  document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-                  document.querySelector('.information_request').innerHTML+=`<div>СОВ: Запрос на освобождение частотного ресурса </div>`;
-                  document.querySelector('.information_request').innerHTML+=`<div>СОВ: Время запроса:${new Date().toLocaleString()} </div>`;
-                  const data_cell=response.Nomera_zanyatyih_yacheek.concat(response.Nomera_zanyatyih_yacheek_pr);
-                  postRelaeseFrRes(data_cell,result.satellite_id).then(()=>{
-                    const dataEndCall=new Date();
-               
-                
-                  document.querySelector('.information_request').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                  // document.querySelector('.information_request').innerHTML+=`<div> Продолжительность вызова ${dataEndCall} секунд</div>`;
-                  document.querySelector('.information_request').innerHTML+=` <div>СУРР: Продолжительность вызова 
-                  ${(dataEndCall-new Date(data.start_datetime_iso))/1000} секунд</div>`;
-                  document.querySelector('.information_request').innerHTML+=` <div>СУРР: Время освобождения частотного ресурса: 
-                  ${dataEndCall.toLocaleString()}</div> <br>`;
-                  
-                  document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                  document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-                  const timeCall=Math.round(Number((dataEndCall-new Date(data.start_datetime_iso))/1000));
-                  console.log(timeCall);
-                  addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
-              
-              });
-              document.getElementById("task-btn_sim").disabled = false;    
-            },{once:true});
-            }
-            else{
-              const btnEnd=document.getElementById('task-btn_cansel_flow');
-            btnEnd.addEventListener('click',()=>{
-              countSession=document.getElementById('quantity_calls').value;
-              // document.getElementById("task-btn_sim").disabled = true;
-              clearTimeout(timer);
-              const data_cell=response.Nomera_zanyatyih_yacheek.concat(response.Nomera_zanyatyih_yacheek_pr);
-              postRelaeseFrRes(data_cell,result.satellite_id).then(()=>{
-                document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-                        document.getElementById('response3').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
-                      
-                        const dataEndCall=new Date();
-                        document.querySelector('.information_request').innerHTML+=` <div>СОВ: Запрос на освобождение частотного ресурса </div>`;
-                        document.querySelector('.information_request').innerHTML+=` <div>СОВ: Время запроса:${new Date().toLocaleString()} </div>`;
-                        document.querySelector('.information_request').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                        document.querySelector('.information_request').innerHTML+=` <div>СУРР Продолжительность вызова: 
-                        ${(dataEndCall-new Date(dataSession.Data_Vyz))/1000} секунд</div>`;
-                        document.querySelector('.information_request').innerHTML+=` <div>СУРР: Время освобождения частотного ресурса: 
-                        ${dataEndCall.toLocaleString()}</div>`;
-                  
-                        document.getElementById('response3').innerHTML+=` <div>СОВ: Запрос на освобождение частотного ресурса </div>`;
-                        document.getElementById('response3').innerHTML+=` <div>СОВ: Время запроса:${new Date().toLocaleString()} </div>`;
-                        document.getElementById('response3').innerHTML+=`<div>СУРР: Освобождения частотного ресурса подтверждена</div>`;
-                        document.getElementById('response3').innerHTML+=`<div>СУРР: Время освобождения частотного ресурса: ${String(dataEndCall.toLocaleString())}</div>`;
-                        const timeCall=Math.round(Number((dataEndCall-new Date(data.start_datetime_iso))/1000));
-                        console.log(timeCall);
-                        addArchivalSession(responses.ID,String(dataEndCall.toISOString()),timeCall,timeCall,7);
-              });
-              // document.getElementById("task-btn_sim").disabled = false;    
-            },{once:true});
-            }
-          });
-            
-            
-          }
-         
-          
+          createDataSessionCommunications(result,response,datesStartTime,data);
         });
       }
       return result;
@@ -894,28 +515,13 @@ function createResponse(result,data){
             
           //   document.getElementById('response3').innerHTML+=`<div>${key}: ${value}</div>`;
           // }
-         
         }
        else{
         for (const [key, values] of Object.entries(value)){
           if (key=='duration_in_sec') {
             document.getElementById('response3').innerHTML+=`<br><span style="
             font-size: calc(1.2rem);">Запрос: </span>`;
-           }
-          // else  if (key=='end_datetime_iso') {
-          //   document.getElementById('response3').innerHTML+=`<div>${key}: ${new Date(values).toLocaleString()}</div>`;
-          //   document.getElementById('response3').innerHTML+=`<div>Максимальная продолжительность вызова : ${(new Date(values)-new Date(data.start_datetime_iso))/1000}</div>`;
-          //   console.log(new Date(values));
-          //   console.log(new Date(data.start_datetime_iso));
-          // }
-          // else  if (key=='start_datetime_iso') {
-          //   document.getElementById('response3').innerHTML+=`<div>${key}: ${new Date(values).toLocaleString()}</div>`;
-          // }
-          // else{
-          //   document.getElementById('response3').innerHTML+=`<div>${key}: ${values}</div>`;
-          // }
-         
-          
+           } 
         }
        }
         console.log();
@@ -985,18 +591,15 @@ function createResponse(result,data){
     }
     
   } 
-  else{
-    // document.getElementById('response3').innerHTML+=`<br><div class="header-log" style="display: block;">Доступный КА:</div>`;  
+  else{ 
   for (const [key, value] of Object.entries(result)) {
     if (typeof(value)!='object') {
       if (key=='duration_in_sec') {
         document.getElementById('response3').innerHTML+=`<div class="total-time"> total_duration_in_sec: ${value}</div>`;
       }
       else {
-        
         document.getElementById('response3').innerHTML+=`<div>${key}: ${value}</div>`;
       }
-     
     }
    else{
     for (const [key, values] of Object.entries(value)){
@@ -1022,69 +625,50 @@ function createResponse(result,data){
     const createInformationRequest=document.createElement('div');
     const parent=document.querySelector('.content');
     createInformationRequest.classList.add('information_request');
-    for (const [key, value] of Object.entries(data)) {
-      if (typeof(value)!='object') {
-        if (key=='start_datetime_iso') {
-          createInformationRequest.innerHTML+=`<br><div style="
-          font-size: calc(1.2rem);">Начало сеанса связи:</div>`; 
-          createInformationRequest.innerHTML+=`<div>СОВ:Время инициирования сеанса связи: ${new Date(value.toLocaleString())}</div>`;
-          document.getElementById('response3').innerHTML+=`<div>СОВ: Инициирование сеанса связи</div>`;
-          document.getElementById('response3').innerHTML+=`<br><div>СОВ:Время инициирования сеанса связи: ${new Date(value).toLocaleString()}` ;
-          // const div=document.createElement('div');
-          // div.textContent=`Время инициирования сеанса связи: ${value}`;
-          // document.getElementById('long-res').after(div); 
+  for (const [key, value] of Object.entries(data)) {
+    if (typeof(value)!='object') {
+      if (key=='start_datetime_iso') {
+        createInformationRequest.innerHTML+=`<br><div style="
+        font-size: calc(1.2rem);">Начало сеанса связи:</div>`; 
+        createInformationRequest.innerHTML+=`<div>СОВ:Время инициирования сеанса связи: ${new Date(value.toLocaleString())}</div>`;
+        document.getElementById('response3').innerHTML+=`<div>СОВ: Инициирование сеанса связи</div>`;
+        document.getElementById('response3').innerHTML+=`<br><div>СОВ:Время инициирования сеанса связи: ${new Date(value).toLocaleString()}` ;
         }
-        else if (key=='min_duration_in_sec') {
-          createInformationRequest.innerHTML+=`<div>CОВ: Минимальная продолжительность вызова, сек: ${value}</div>`;
-          console.log(value);
-        }
-        else{
-          createInformationRequest.innerHTML+=`<div>${key}: ${value}</div>`;
-        }
+      else if (key=='min_duration_in_sec') {
+        createInformationRequest.innerHTML+=`<div>CОВ: Минимальная продолжительность вызова, сек: ${value}</div>`;
+        console.log(value);
       }
-     else{
-      const charKA=document.createElement('div');
-      for (const [key, values] of Object.entries(value)){
-        
-        if (key=='name') {
-         
-          charKA.style=` font-size: calc(1.2rem);`;
-          charKA.textContent="Характеристики КА:";
-          // createInformationRequest.innerHTML+=`<div style="
-          // font-size: calc(1.2rem);">Характеристики КА:</div>`;
-         
-          charKA.innerHTML+=`<div>Наименование КА: ${result.satellite_name} ${values}</div>`;
-          
-        }
-        else if (key=='lat') {
-          // createInformationRequest.innerHTML+=`<br><div>Вызов:</div>`;
-          createInformationRequest.innerHTML+=`<br><div style="
-          font-size: calc(1.2rem);">Характеристики Абонента:</div>`;
-          createInformationRequest.innerHTML+=`<div>Широта, градусы: ${values}</div>`;
-        }
-        else if (key=='lon') {
-          createInformationRequest.innerHTML+=`<div>Долгота, градусы: ${values}</div><br>`;
-        }
-        else if (key=='radius') {
-          charKA.innerHTML+=`<div>Радиус зоны действия КА, км: ${values}</div>`;
-          // createInformationRequest.append(charKA);
-        }
-        else{
-           createInformationRequest.innerHTML+=`<div>${key}: ${values}</div>`;
-        }
-        
+      else{
+        createInformationRequest.innerHTML+=`<div>${key}: ${value}</div>`;
       }
-     
-     }
-      console.log();
     }
-    parent.append(createInformationRequest);
+    else{
+    const charKA=document.createElement('div');
+    for (const [key, values] of Object.entries(value)){
+      if (key=='name') {
+        charKA.style=` font-size: calc(1.2rem);`;
+        charKA.textContent="Характеристики КА:";
+        charKA.innerHTML+=`<div>Наименование КА: ${result.satellite_name} ${values}</div>`;
+      }
+      else if (key=='lat') {
+        createInformationRequest.innerHTML+=`<br><div style="
+        font-size: calc(1.2rem);">Характеристики Абонента:</div>`;
+        createInformationRequest.innerHTML+=`<div>Широта, градусы: ${values}</div>`;
+      }
+      else if (key=='lon') {
+        createInformationRequest.innerHTML+=`<div>Долгота, градусы: ${values}</div><br>`;
+      }
+      else if (key=='radius') {
+        charKA.innerHTML+=`<div>Радиус зоны действия КА, км: ${values}</div>`;
+      }
+      else{
+          createInformationRequest.innerHTML+=`<div>${key}: ${values}</div>`;
+      } 
+    }
+    }
   }
-  // document.getElementById('response3').innerHTML='';
-  
-  
-  
- 
+  parent.append(createInformationRequest);
+  }
 }
 async function postOcFrREs(stId,type,reception,transmission){
   try {
