@@ -115,8 +115,6 @@ function clearFrecRes(selectorBtn,responses,respons,result,data,timer,dataVyz){
     const data_cell=respons.Nomera_zanyatyih_yacheek.concat(respons.Nomera_zanyatyih_yacheek_pr);
     postRelaeseFrRes(data_cell,result.satellite_id).then((res)=>{
       if (!res) {
-        
-      
       const dataEndCall=new Date();
       document.querySelector('.information_request').innerHTML+=` <br><div style="font-size: calc(1.2rem);">Завершение сеанса связи: </div>`;
       document.getElementById('response3').innerHTML+=`<br><div style="
@@ -403,13 +401,13 @@ async function calculateFirstAvailableInterval(data){
       document.getElementById('response3').innerHTML+=`<div>СУРР: Время ответа от СУРР: ${datesStartTime.toLocaleString()}</div>`;
       if (document.querySelector('.duplex-checkbox').checked) {
         let valDuplex=document.querySelector('.duplex-checkbox').value;
-          postOcFrREs(result.satellite_id,valDuplex-1,0,1)
+          postOcFrREs(result.satellite_id)
             .then(respons=>{
               createDataSessionCommunications(result,respons,datesStartTime,data);
             });
        }
       else if(document.querySelector('.simplex-checkbox').checked){
-        postOcFrREs(result.satellite_id,document.querySelector('.simplex-checkbox').value,0,1).then(response=>{
+        postOcFrREs(result.satellite_id).then(response=>{
           createDataSessionCommunications(result,response,datesStartTime,data);
         });
       }
@@ -672,7 +670,7 @@ function createResponse(result,data){
 }
 async function postOcFrREs(stId,type,reception,transmission){
   try {
-    const response = await fetch(`http://185.192.247.60:7130/CommunicationAvailability/OccupyFrequencyResource?satellite_id=${stId}&number_of_cells_for_reservation=${type}&number_of_cells_for_reception=${reception}&number_of_cells_for_transmission=${transmission}`, {
+    const response = await fetch(`http://185.192.247.60:7130/CommunicationAvailability/OccupyFrequencyResource?satellite_id=${stId}`, {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
@@ -712,10 +710,13 @@ if (document.querySelector('h2')) {
   if (document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов') {
     const imgRe=document.querySelector('.re-date');
     imgRe.addEventListener('click',()=>{
-      const randLong=getRandomNumber(27,169)
-      const randLat=getRandomNumber(41,77)
-      document.getElementById('lat3').value=randLat;
-      document.getElementById('lon3').value=randLong;
+      if (document.querySelector('.coord-rand').checked) {
+        const randLong=getRandomNumber(27,169)
+        const randLat=getRandomNumber(41,77)
+        document.getElementById('lat3').value=randLat;
+        document.getElementById('lon3').value=randLong;
+      }
+      
       // document.getElementById('latitude-res').innerHTML=`Широта, градусы: ${randLat}`;
       // document.getElementById('long-res').innerHTML=`Долгота, градусы: ${randLong}`;
 
@@ -771,9 +772,9 @@ if (document.querySelector('h2')) {
       const loader = new Loader('.loader-container');
         loader.show('Загрузка данных с сервера');
         
-      calculateFirstAvailableInterval(data).then(()=>{
+        calculateFirstAvailableInterval(data).then(()=>{
         loader.close();
-       document.getElementById('response3').style.display='block';
+        document.getElementById('response3').style.display='block';
         document.getElementById("task-btn_cansel").disabled = false;
       });
     });
@@ -783,10 +784,13 @@ if (document.querySelector('h2')) {
     const btnFlawStart=document.querySelector('#task-btn_sim_flow');
     const imageRe=document.querySelector('.re-date-flow');
     imageRe.addEventListener('click',()=>{
-      const randLong=getRandomNumber(27,169)
-      const randLat=getRandomNumber(41,77)
-      document.getElementById('lat4').value=randLat;
-      document.getElementById('lon4').value=randLong;
+      if (document.querySelector('.priority-checkbox').checked) {
+        const randLong=getRandomNumber(27,169)
+        const randLat=getRandomNumber(41,77)
+        document.getElementById('lat4').value=randLat;
+        document.getElementById('lon4').value=randLong;
+      }
+     
       // document.getElementById('latitude-res').innerHTML=`Широта, градусы: ${randLat}`;
       // document.getElementById('long-res').innerHTML=`Долгота, градусы: ${randLong}`;
 
@@ -844,14 +848,14 @@ if (document.querySelector('h2')) {
         if (selectedSize==2) {
           timeTimers= Math.floor(getRandomNumber(1,(timeCalls/quantyCalls)));
           console.log(timeTimers);
-       }
+        }
         console.log(data.lat,' ', data.lon);
         calculateFirstAvailableInterval(data).then(()=>{
           loader.close();
           ++countSession;
           console.log(countSession);
           document.getElementById('response3').style.display='block';
-      })
+        })
       }
       function setIntervalImmediately(func, interval) {
         func(); // Немедленное исполнение функции
