@@ -585,6 +585,9 @@ body {
     font-size: calc(1.2rem);
     
 }
+#typeTime{
+    padding-left: 21%;
+}
 /* Контейнер загрузки */
 .loader-container {
     width: 100%;
