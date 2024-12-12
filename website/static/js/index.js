@@ -57,6 +57,16 @@ class Loader {
       this.open()
   }
 }
+function getDateTimes(dateControl,timeControl){
+  let dateControlYear=+dateControl.value.substring(0,4);
+  let dateControlMonth=+dateControl.value.substring(5,7);
+  let dateControlDay=+dateControl.value.substring(8,10);
+  let timeHouse=Number(`${timeControl.value[0]}${timeControl.value[1]}`);
+  let timeMin=+(`${timeControl.value[3]}${timeControl.value[4]}`);
+  let timeSec=+(`${timeControl.value[6]}${timeControl.value[7]}`);
+  const dateTime=new Date(dateControlYear,dateControlMonth-1,dateControlDay,timeHouse,timeMin,timeSec);
+  return dateTime
+}
 function getRandomNumber(min, max) {
   min = Math.ceil(min)
   max = Math.floor(max)
@@ -742,7 +752,7 @@ if (document.querySelector('h2')) {
     console.log(dateControl.value);
     console.log(timeControl.value);
     let timeSelf=`${dateControl.value}T0${numberTime-3}${timeControl.value.substring(2,10)}.000Z`;
-    console.log(timeSelf);
+    console.log(timeControl);
     console.log(`${dateControl.value}T${timeControl.value}Z.000`);
     const btnStartSim=document.getElementById('task-btn_sim');
     btnStartSim.addEventListener('click',()=>{
@@ -761,8 +771,11 @@ if (document.querySelector('h2')) {
          data.start_datetime_iso= new Date().toISOString();
       }
       else{
-        timeSelf=`${dateControl.value}T${timeControl.value}.000Z`;
-        data.start_datetime_iso= timeSelf;
+        timeSelf=getDateTimes(dateControl,timeControl)
+        // timeSelf=`${dateControl.value}T${timeControl.value}.000Z`;
+        data.start_datetime_iso= String(timeSelf.toISOString());
+        console.log(timeSelf)
+
       }
       
       // document.getElementById('response3').innerHTML='';
