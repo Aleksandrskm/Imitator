@@ -57,6 +57,10 @@ class Loader {
       this.open()
   }
 }
+function setIntervalImmediately(func, interval) {
+        // func(); // Немедленное исполнение функции
+        return setTimeout(func, interval); // Затем функция продолжает работать по интервалу
+      }
 function getDateTimes(dateControl,timeControl){
   let dateControlYear=+dateControl.value.substring(0,4);
   let dateControlMonth=+dateControl.value.substring(5,7);
@@ -99,26 +103,35 @@ function getDateTime() {
   let dateTime = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second;   
    return dateTime;
 }
-function createBeginningLog(dateStartTime,result){
+function createBeginningLog(dateStartTime,result,idInterval){
   console.log(result)
+  
   document.querySelector('.information_request').innerHTML+=`<div>СУРР: Время ответа от СУРР:  ${dateStartTime.toLocaleString()}</div>`;
-  document.getElementById('response3').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
-  document.getElementById('response3').innerHTML+=`<div>СУРР: Частотный ресурс: ${result['abonents'][0]['ka-naim']} на передачу: канал
-              ${result['abonents'][0]['canal-transm']} тайм слот  ${result['abonents'][0]['time-transm-no']}, 
+  if (idInterval==0) {
+    document.getElementById('response3').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
+    document.querySelector('.information_request').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
+  }
+  else{
+    document.getElementById('response3').innerHTML+=`<div>СОВ:  Продолжение сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
+    document.querySelector('.information_request').innerHTML+=`<div>СОВ:  Продолжение сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
+  }
+  // document.getElementById('response3').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
+  document.getElementById('response3').innerHTML+=`<div>СУРР: Частотный ресурс: ${result['abonents'][0]['intervals'][idInterval]['ka-naim']} на передачу: канал
+              ${result['abonents'][0]['intervals'][0]['canal-transm']} тайм слот  ${result['abonents'][0]['intervals'][idInterval]['time-transm-no']}, 
               на прием: канал
-  ${result['abonents'][0]['canal-receive']} тайм слот ${result['abonents'][0]['time-receive-no']}</div>`;
-  document.querySelector('.information_request').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
+  ${result['abonents'][0]['intervals'][idInterval]['canal-receive']} тайм слот ${result['abonents'][0]['intervals'][idInterval]['time-receive-no']}</div>`;
+  // document.querySelector('.information_request').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
   document.querySelector('.information_request').innerHTML+=`<div> 
-  СУРР: Частотный ресурс:  ${result['abonents'][0]['ka-naim']} на передачу: канал
-  ${result['abonents'][0]['canal-transm']} тайм слот  ${result['abonents'][0]['time-transm-no']}, 
+  СУРР: Частотный ресурс:  ${result['abonents'][0]['intervals'][idInterval]['ka-naim']} на передачу: канал
+  ${result['abonents'][0]['intervals'][idInterval]['canal-transm']} тайм слот  ${result['abonents'][0]['intervals'][idInterval]['time-transm-no']}, 
   на прием: канал
-  ${result['abonents'][0]['canal-receive']} тайм слот ${result['abonents'][0]['time-receive-no']}
+  ${result['abonents'][0]['intervals'][idInterval]['canal-receive']} тайм слот ${result['abonents'][0]['intervals'][idInterval]['time-receive-no']}
   </div> `;
-  document.querySelector('.information_request').innerHTML+=`<div>СУРР: ID подключенной РСС: ${result['abonents'][0]["rss-id"]}</div>`;
-  document.getElementById('response3').innerHTML+=`<div>СУРР: ID подключенной РСС: ${result['abonents'][0]["rss-id"]}</div>`;
-  document.querySelector('.information_request').innerHTML+=`<div>СУРР: Наименование подключенной РСС: ${result['abonents'][0]["rss-name"]}</div>`;
-  document.getElementById('response3').innerHTML+=`<div>СУРР: Наименование  подключенной РСС: ${result['abonents'][0]["rss-name"]}</div>`;
-  console.log(result['abonents'][0]['time-receive-no']);
+  document.querySelector('.information_request').innerHTML+=`<div>СУРР: ID подключенной РСС: ${result['abonents'][0]['intervals'][idInterval]["rss-id"]}</div>`;
+  document.getElementById('response3').innerHTML+=`<div>СУРР: ID подключенной РСС: ${result['abonents'][0]['intervals'][idInterval]["rss-id"]}</div>`;
+  document.querySelector('.information_request').innerHTML+=`<div>СУРР: Наименование подключенной РСС: ${result['abonents'][0]['intervals'][idInterval]["rss-name"]}</div>`;
+  document.getElementById('response3').innerHTML+=`<div>СУРР: Наименование  подключенной РСС: ${result['abonents'][0]['intervals'][idInterval]["rss-name"]}</div>`;
+  console.log(result['abonents'][0]['intervals'][idInterval]['time-receive-no']);
 }
 function clearFrecRes(selectorBtn,responses,respons,result,data,timer,dataVyz){
   clearTimeout(timer);
@@ -278,10 +291,59 @@ function createLogImitator(dateStartTime,datesStartTime,respons,result,data){
   //       }
   //   }); 
 }
+
+
+
 function createDataSessionCommunications(result,respons,datesStartTime,data){
   const randTime=getRandomNumber(60000,120000);
-  const dateStartTime=new Date();
-  createBeginningLog(dateStartTime,result);
+  let idInterval=0;
+  let  duration=0;
+  let dateStartTime=new Date();
+  let timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval)
+  // createBeginningLog(dateStartTime,result,idInterval);
+  function createLogs(dateStartTime,result,idInterval){
+    console.log(`idInterval${idInterval}`)
+  if (idInterval!=result['abonents'][0]['intervals'].length) {
+     dateStartTime=new Date();
+      createBeginningLog(dateStartTime,result,idInterval);
+      clearTimeout(timerLogs);
+      idInterval++;
+      if (idInterval!=result['abonents'][0]['intervals'].length){
+         if(result['abonents'][0]['intervals'][idInterval-1]['data-end']!=result['abonents'][0]['intervals'][idInterval]['data-beg'] && result['abonents'][0]['intervals'].length>1){
+          console.log('нет сеанса связи')
+        }
+      }
+     
+     
+      duration=result['abonents'][0]['intervals'][idInterval-1]['duration']*100;
+      timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
+  }
+  else{
+     clearTimeout(timerLogs);
+     console.log(`konez`)
+  }
+ 
+ 
+  
+}
+  
+    
+    
+   
+    //  if (idInterval0) {
+    //   duration=result['abonents'][0]['intervals'][idInterval-1]['duration']*1000;
+    // }
+    
+    // if (idInterval!=1) {
+    //   duration=result['abonents'][0]['intervals'][idInterval-1][duration]*1000
+    // }
+    
+    // let timeLogs=setTimeout(createBeginningLog,0,dateStartTime,result,idInterval);
+
+  
+  
+ 
+ 
   // createLogImitator(dateStartTime,datesStartTime,respons,result,data);
 }
 function release_all_frequency_resources(){
@@ -405,7 +467,7 @@ function logErrorSvSeans(elemResponse,elemRequest,data) {
 }
 async function calculateFirstAvailableInterval(data){
   try {
-    const response = await fetch("http://185.192.247.60:7130/sov_surr/calc_plan_svyazi_sov", {
+    const response = await fetch("http://127.0.0.1:8000/sov_surr/calc_plan_svyazi_sov", {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
@@ -660,6 +722,7 @@ const modal = document.getElementById("myModal");
 const btn = document.getElementById("openModal");
 const span = document.getElementsByClassName("close")[0];
 let countSession=0;
+
 btn.addEventListener("click", ()=>{modal.style.display = "flex"});
 span.addEventListener("click", ()=>{modal.style.display = "none"});  
 if (document.querySelector('h2')) {
@@ -704,6 +767,7 @@ if (document.querySelector('h2')) {
             "terminal-id-output": selIndex,
             "date-time-call": new Date().toISOString().replace('Z','+00:00'),
             "сonnection_type": 3,
+            "ist":2,
             "abonents": [
               {
                 "terminal-id": selIndex,
@@ -811,10 +875,7 @@ if (document.querySelector('h2')) {
           document.getElementById('response3').style.display='block';
         })
       }
-      function setIntervalImmediately(func, interval) {
-        func(); // Немедленное исполнение функции
-        return setInterval(func, interval); // Затем функция продолжает работать по интервалу
-      }
+     
       const timerCalls=setIntervalImmediately(nextCall,timeTimers*1000)
       const time=setInterval(function(){
         if (countSession==quantyCalls) {
