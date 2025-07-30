@@ -103,8 +103,7 @@ function getDateTime() {
   let dateTime = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second;   
    return dateTime;
 }
-function createBeginningLog(dateStartTime,result,idInterval){
-  console.log(result)
+function createBeginningLog(dateStartTime,{abonents:[{intervals}]},idInterval){
   
   document.querySelector('.information_request').innerHTML+=`<div>СУРР: Время ответа от СУРР:  ${dateStartTime.toLocaleString()}</div>`;
   if (idInterval==0) {
@@ -116,22 +115,22 @@ function createBeginningLog(dateStartTime,result,idInterval){
     document.querySelector('.information_request').innerHTML+=`<div>СОВ:  Продолжение сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
   }
   // document.getElementById('response3').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
-  document.getElementById('response3').innerHTML+=`<div>СУРР: Частотный ресурс: ${result['abonents'][0]['intervals'][idInterval]['ka-naim']} на передачу: канал
-              ${result['abonents'][0]['intervals'][0]['canal-transm']} тайм слот  ${result['abonents'][0]['intervals'][idInterval]['time-transm-no']}, 
+  document.getElementById('response3').innerHTML+=`<div>СУРР: Частотный ресурс: ${intervals[idInterval]['ka-naim']} на передачу: канал
+              ${intervals[0]['canal-transm']} тайм слот  ${intervals[idInterval]['time-transm-no']}, 
               на прием: канал
-  ${result['abonents'][0]['intervals'][idInterval]['canal-receive']} тайм слот ${result['abonents'][0]['intervals'][idInterval]['time-receive-no']}</div>`;
+  ${intervals[idInterval]['canal-receive']} тайм слот ${intervals[idInterval]['time-receive-no']}</div>`;
   // document.querySelector('.information_request').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
   document.querySelector('.information_request').innerHTML+=`<div> 
-  СУРР: Частотный ресурс:  ${result['abonents'][0]['intervals'][idInterval]['ka-naim']} на передачу: канал
-  ${result['abonents'][0]['intervals'][idInterval]['canal-transm']} тайм слот  ${result['abonents'][0]['intervals'][idInterval]['time-transm-no']}, 
+  СУРР: Частотный ресурс:  ${intervals[idInterval]['ka-naim']} на передачу: канал
+  ${intervals[idInterval]['canal-transm']} тайм слот  ${intervals[idInterval]['time-transm-no']}, 
   на прием: канал
-  ${result['abonents'][0]['intervals'][idInterval]['canal-receive']} тайм слот ${result['abonents'][0]['intervals'][idInterval]['time-receive-no']}
+  ${intervals[idInterval]['canal-receive']} тайм слот ${intervals[idInterval]['time-receive-no']}
   </div> `;
-  document.querySelector('.information_request').innerHTML+=`<div>СУРР: ID подключенной РСС: ${result['abonents'][0]['intervals'][idInterval]["rss-id"]}</div>`;
-  document.getElementById('response3').innerHTML+=`<div>СУРР: ID подключенной РСС: ${result['abonents'][0]['intervals'][idInterval]["rss-id"]}</div>`;
-  document.querySelector('.information_request').innerHTML+=`<div>СУРР: Наименование подключенной РСС: ${result['abonents'][0]['intervals'][idInterval]["rss-name"]}</div>`;
-  document.getElementById('response3').innerHTML+=`<div>СУРР: Наименование  подключенной РСС: ${result['abonents'][0]['intervals'][idInterval]["rss-name"]}</div>`;
-  console.log(result['abonents'][0]['intervals'][idInterval]['time-receive-no']);
+  document.querySelector('.information_request').innerHTML+=`<div>СУРР: ID подключенной РСС: ${intervals[idInterval]["rss-id"]}</div>`;
+  document.getElementById('response3').innerHTML+=`<div>СУРР: ID подключенной РСС: ${intervals[idInterval]["rss-id"]}</div>`;
+  document.querySelector('.information_request').innerHTML+=`<div>СУРР: Наименование подключенной РСС: ${intervals[idInterval]["rss-name"]}</div>`;
+  document.getElementById('response3').innerHTML+=`<div>СУРР: Наименование  подключенной РСС: ${intervals[idInterval]["rss-name"]}</div>`;
+  console.log(intervals[idInterval]['time-receive-no']);
 }
 function clearFrecRes(selectorBtn,responses,respons,result,data,timer,dataVyz){
   clearTimeout(timer);
@@ -299,29 +298,94 @@ function createDataSessionCommunications(result,respons,datesStartTime,data){
   let idInterval=0;
   let  duration=0;
   let dateStartTime=new Date();
+
   let timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval)
   // createBeginningLog(dateStartTime,result,idInterval);
-  function createLogs(dateStartTime,result,idInterval){
-    console.log(`idInterval${idInterval}`)
-  if (idInterval!=result['abonents'][0]['intervals'].length) {
-     dateStartTime=new Date();
-      createBeginningLog(dateStartTime,result,idInterval);
-      clearTimeout(timerLogs);
-      idInterval++;
-      if (idInterval!=result['abonents'][0]['intervals'].length){
-         if(result['abonents'][0]['intervals'][idInterval-1]['data-end']!=result['abonents'][0]['intervals'][idInterval]['data-beg'] && result['abonents'][0]['intervals'].length>1){
-          console.log('нет сеанса связи')
+  const createLog=function (intervals,dateStartTime,idInterval){
+    
+       if (idInterval!=intervals.length){
+        if((intervals[idInterval-1]['data-end']==intervals[idInterval]['data-beg'] || new Date(intervals[idInterval]['data-beg']) <= new Date())&& intervals.length>1)
+        {
+            duration=intervals[idInterval]['duration']*1000;
+            console.log(`Длитеьность :${duration/1000} секунд`)
+            createBeginningLog(dateStartTime,result,idInterval);
+            timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval+1);
+            idInterval++;
         }
-      }
-     
-     
-      duration=result['abonents'][0]['intervals'][idInterval-1]['duration']*100;
-      timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
+        else if(intervals[idInterval-1]['data-end']!=intervals[idInterval]['data-beg'] && intervals.length>1){
+            duration = (new Date(intervals[idInterval]['data-beg']) - new Date(intervals[idInterval-1]['data-end']))/1000
+            console.log(`Следующий сеанс начнется через: ${duration} секунд`)
+            console.log('нет сеанса связи')
+            // duration+=intervals[idInterval-1]['duration']*100;
+            // createBeginningLog(dateStartTime,result,idInterval);
+            // idInterval++;
+            dateStartTime=new Date();
+            timerLogs=setTimeout(createLogs,duration*1000,dateStartTime,result,idInterval);
+          }
+          else{
+            duration=intervals[idInterval]['duration']*1000;
+            createBeginningLog(dateStartTime,result,idInterval);
+            timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval+1);
+            idInterval++;
+          }
+        }
   }
-  else{
-     clearTimeout(timerLogs);
-     console.log(`konez`)
-  }
+  function createLogs(dateStartTime,{abonents:[{intervals}]},idInterval){
+    
+    console.log(`idInterval: ${idInterval}`)
+    
+    if (idInterval!=intervals.length) {
+     
+        dateStartTime=new Date();
+        if (idInterval==0 &&  new Date(intervals[idInterval]['data-beg']) <= dateStartTime) {
+          
+          createBeginningLog(dateStartTime,result,idInterval);
+          clearTimeout(timerLogs);
+          idInterval++;
+          duration=intervals[idInterval-1]['duration']*1000;
+          timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);   
+        }
+        else if(idInterval==0){
+          // duration = (new Date(intervals[idInterval+1]['data-beg']) - new Date(intervals[idInterval]['data-end']))/1000;
+          duration=(new Date()-new Date(intervals[idInterval]['data-beg']))/1000
+          clearTimeout(timerLogs);
+          console.log(`Сеанс начнется через ${duration*-1} секунд, ID интервала: ${idInterval}`)
+          timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
+        }
+        else{
+            clearTimeout(timerLogs);
+            createLog(intervals,dateStartTime,idInterval)
+            idInterval++;
+            
+        }
+        
+        
+        // if (idInterval!=intervals.length){
+        //   if(intervals[idInterval-1]['data-end']!=intervals[idInterval]['data-beg'] && intervals.length>1){
+        //     duration = (new Date(intervals[idInterval]['data-beg']) - new Date(intervals[idInterval-1]['data-end']))/1000
+        //     console.log(duration)
+        //     console.log('нет сеанса связи')
+        //     duration+=intervals[idInterval-1]['duration']*100;
+        //     createBeginningLog(dateStartTime,result,idInterval);
+        //     idInterval++;
+        //     timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
+        //   }
+        //   else{
+        //     duration=intervals[idInterval-1]['duration']*100;
+        //     createBeginningLog(dateStartTime,result,idInterval);
+        //     timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
+        //     idInterval++;
+        //   }
+        // }
+        // else{
+        //   duration=result['abonents'][0]['intervals'][idInterval-1]['duration']*100;
+        //   timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
+        // }   
+    }
+    else{
+        clearTimeout(timerLogs);
+        console.log(`konez`)
+    }
  
  
   
@@ -542,7 +606,7 @@ async function calculateFirstAvailableInterval(data){
      
       if (document.querySelector('.duplex-checkbox').checked) {
         let valDuplex=document.querySelector('.duplex-checkbox').value;
-         
+              
               createDataSessionCommunications(result,datesStartTime,data);
            
        }
