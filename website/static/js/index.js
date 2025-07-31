@@ -1,4 +1,6 @@
 'use strict';
+import {Utils} from "./Utils.js";
+import {ImitatorUtils} from "./ImitatorUtils.js";
 class Loader {
   /**
    * Конструктор класса загрузчика.
@@ -308,7 +310,7 @@ function createDataSessionCommunications(result,respons,datesStartTime,data){
         {
             duration=intervals[idInterval]['duration']*1000;
             console.log(`Длитеьность :${duration/1000} секунд`)
-            createBeginningLog(dateStartTime,result,idInterval);
+            ImitatorUtils.createBeginningLog(dateStartTime,result,idInterval);
             timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval+1);
             idInterval++;
         }
@@ -324,7 +326,7 @@ function createDataSessionCommunications(result,respons,datesStartTime,data){
           }
           else{
             duration=intervals[idInterval]['duration']*1000;
-            createBeginningLog(dateStartTime,result,idInterval);
+            ImitatorUtils.createBeginningLog(dateStartTime,result,idInterval);
             timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval+1);
             idInterval++;
           }
@@ -338,12 +340,11 @@ function createDataSessionCommunications(result,respons,datesStartTime,data){
      
         dateStartTime=new Date();
         if (idInterval==0 &&  new Date(intervals[idInterval]['data-beg']) <= dateStartTime) {
-          
-          createBeginningLog(dateStartTime,result,idInterval);
-          clearTimeout(timerLogs);
-          idInterval++;
-          duration=intervals[idInterval-1]['duration']*1000;
-          timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);   
+              ImitatorUtils.createBeginningLog(dateStartTime,result,idInterval);
+              clearTimeout(timerLogs);
+              idInterval++;
+              duration=intervals[idInterval-1]['duration']*1000;
+              timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
         }
         else if(idInterval==0){
           // duration = (new Date(intervals[idInterval+1]['data-beg']) - new Date(intervals[idInterval]['data-end']))/1000;
@@ -542,7 +543,7 @@ async function calculateFirstAvailableInterval(data){
     const result = await response.json();
     console.log("Success:", response.status);
     if (response.status!=200 )  {
-      logErrorSvSeans( document.getElementById('response3'),document.querySelector('.information_request'),data)
+      ImitatorUtils.logErrorSvSeans( document.getElementById('response3'),document.querySelector('.information_request'),data)
     }
     else
     {
@@ -606,13 +607,13 @@ async function calculateFirstAvailableInterval(data){
      
       if (document.querySelector('.duplex-checkbox').checked) {
         let valDuplex=document.querySelector('.duplex-checkbox').value;
-              
-              createDataSessionCommunications(result,datesStartTime,data);
+
+              ImitatorUtils.createDataSessionCommunications(result,datesStartTime,data);
            
        }
       else if(document.querySelector('.simplex-checkbox').checked){
-       
-          createDataSessionCommunications(result,response,datesStartTime,data);
+
+          ImitatorUtils.createDataSessionCommunications(result,response,datesStartTime,data);
        
       }
       return result;
@@ -778,8 +779,7 @@ async function postRelaeseFrRes(data,stId){
 
 // example usage: realtime clock
 setInterval(function(){
-  let currentTime = getDateTime();
-  document.getElementById("timer").innerHTML = currentTime;
+    document.getElementById("timer").innerHTML = Utils.getDateTime();
 }, 0);
 
 const modal = document.getElementById("myModal");
@@ -790,21 +790,21 @@ let countSession=0;
 btn.addEventListener("click", ()=>{modal.style.display = "flex"});
 span.addEventListener("click", ()=>{modal.style.display = "none"});  
 if (document.querySelector('h2')) {
-  if (document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов') {
+  if (document.querySelector('h2').innerHTML==='Имитатор одиночных вызовов') {
     const imgRe=document.querySelector('.re-date');
     imgRe.addEventListener('click',()=>{
       if (document.querySelector('.coord-rand').checked) {
-        const randLong=getRandomNumber(27,169)
-        const randLat=getRandomNumber(41,77)
+        const randLong=Utils.getRandomNumber(27,169)
+        const randLat=Utils.getRandomNumber(41,77)
         document.getElementById('lat3').value=randLat;
         document.getElementById('lon3').value=randLong;
       }
     });
     const dateControl = document.querySelector('input[type="date"]');
-    dateControl.value=getDateTime().slice(0,10);
+    dateControl.value=Utils.getDateTime().slice(0,10);
     const timeControl = document.querySelector('input[type="time"]');
-    let numberTime=Number(getDateTime().substring(11,13));
-    let timeVal=getDateTime().substring(13,19);
+    let numberTime=Number(Utils.getDateTime().substring(11,13));
+    let timeVal=Utils.getDateTime().substring(13,19);
     if (numberTime>=10) {
       timeControl.value=`${numberTime}${timeVal}`;
     }
@@ -861,7 +861,7 @@ if (document.querySelector('h2')) {
       // }
       const loader = new Loader('.loader-container');
         loader.show('Загрузка данных с сервера');
-        calculateFirstAvailableInterval(data).then(()=>{
+        ImitatorUtils.calculateFirstAvailableInterval(data).then(()=>{
         loader.close();
         document.getElementById('response3').style.display='block';
         document.getElementById("task-btn_cansel").disabled = false;
@@ -932,7 +932,7 @@ if (document.querySelector('h2')) {
           console.log(timeTimers);
         }
         console.log(data.lat,' ', data.lon);
-        calculateFirstAvailableInterval(data).then(()=>{
+        ImitatorUtils.calculateFirstAvailableInterval(data).then(()=>{
           loader.close();
           ++countSession;
           console.log(countSession);
@@ -992,28 +992,28 @@ if (document.querySelector('h2')) {
 //   lastIndex = index; 
 // });
 // }
-function viewAbonents(selectorSelect,selectorPhoneNumper) {
+function viewAbonents(selectorSelect,selectorPhoneNumber) {
   if (document.getElementById(selectorSelect)) {
     const select = document.getElementById(selectorSelect);
-  let number = document.querySelectorAll(selectorPhoneNumper);
-  let lastIndex = 0; 
+  let number = document.querySelectorAll(selectorPhoneNumber);
+  let lastIndex = 0;
   select.addEventListener('change', function() {
-    number[lastIndex].classList.remove ("hide"); 
-    number[lastIndex].classList.remove ("show"); 
-    let index = select.selectedIndex; 
+    number[lastIndex].classList.remove ("hide");
+    number[lastIndex].classList.remove ("show");
+    let index = select.selectedIndex;
    if (!index) {
-    number[lastIndex].classList.remove ("hide"); 
-    number[lastIndex].classList.remove ("show"); 
+    number[lastIndex].classList.remove ("hide");
+    number[lastIndex].classList.remove ("show");
    }
    else{
     number[index].classList.add("show"); // Показать блок с соответствующим индексом
     number[index].classList.remove ("hide");
    }
-    lastIndex = index; 
+    lastIndex = index;
   });
   }
 }
-viewAbonents('abonent-select','.number');
-viewAbonents('abonent-select-rec','.number-rec')
+Utils.viewAbonents('abonent-select','.number');
+Utils.viewAbonents('abonent-select-rec','.number-rec')
 
 
