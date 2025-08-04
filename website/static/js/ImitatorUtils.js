@@ -22,13 +22,13 @@ export  class ImitatorUtils{
             document.getElementById('response3').innerHTML+=`<div>СУРР: Частотный ресурс: ${intervals[idInterval]['ka-naim']} на передачу: канал
               ${intervals[0]['canal-transm']} тайм слот  ${intervals[idInterval]['time-transm-no']}, 
               на прием: канал
-  ${intervals[idInterval]['canal-receive']} тайм слот ${intervals[idInterval]['time-receive-no']}</div>`;
+              ${intervals[idInterval]['canal-receive']} тайм слот ${intervals[idInterval]['time-receive-no']}</div>`;
             // document.querySelector('.information_request').innerHTML+=`<div>СОВ:  Начало сеанса связи: ${dateStartTime.toLocaleString()}</div>`;
             document.querySelector('.information_request').innerHTML+=`<div> 
-  СУРР: Частотный ресурс:  ${intervals[idInterval]['ka-naim']} на передачу: канал
-  ${intervals[idInterval]['canal-transm']} тайм слот  ${intervals[idInterval]['time-transm-no']}, 
-  на прием: канал
-  ${intervals[idInterval]['canal-receive']} тайм слот ${intervals[idInterval]['time-receive-no']}
+              СУРР: Частотный ресурс:  ${intervals[idInterval]['ka-naim']} на передачу: канал
+              ${intervals[idInterval]['canal-transm']} тайм слот  ${intervals[idInterval]['time-transm-no']}, 
+              на прием: канал
+              ${intervals[idInterval]['canal-receive']} тайм слот ${intervals[idInterval]['time-receive-no']}
   </div> `;
             document.querySelector('.information_request').innerHTML+=`<div>СУРР: ID подключенной РСС: ${intervals[idInterval]["rss-id"]}</div>`;
             document.getElementById('response3').innerHTML+=`<div>СУРР: ID подключенной РСС: ${intervals[idInterval]["rss-id"]}</div>`;
@@ -41,7 +41,14 @@ export  class ImitatorUtils{
         let  duration=0;
         let dateStartTime=new Date();
 
-        let timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval)
+        let timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
+        const btnEnd=document.getElementById("task-btn_cansel");
+        function endSeans( timer,dateStartTime) {
+            ImitatorUtils.logEndSeans(timer,dateStartTime);
+        }
+        let boundHandler =endSeans.bind(null,timerLogs,dateStartTime);
+        // const boundHandler =endSeans.bind(null,timerLogs,dateStartTime,{once:true});
+        // btnEnd.addEventListener('click',boundHandler)
         // createBeginningLog(dateStartTime,result,idInterval);
         const createLog=function (intervals,dateStartTime,idInterval){
 
@@ -74,6 +81,8 @@ export  class ImitatorUtils{
         }
         function createLogs(dateStartTime,{abonents:[{intervals}]},idInterval){
             console.log(`idInterval: ${idInterval}`)
+
+            btnEnd.addEventListener('click',boundHandler,{once:true})
             if (idInterval!==intervals.length) {
                 dateStartTime=new Date();
                 if (idInterval===0 &&  new Date(intervals[idInterval]['data-beg']) <= dateStartTime) {
@@ -81,18 +90,26 @@ export  class ImitatorUtils{
                     clearTimeout(timerLogs);
                     idInterval++;
                     duration=intervals[idInterval-1]['duration']*1000;
+                    btnEnd.removeEventListener("click", boundHandler);
                     timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
+                    boundHandler =endSeans.bind(null,timerLogs,dateStartTime,{once:true});
+                    btnEnd.addEventListener('click',boundHandler,{once:true})
+
                 }
                 else if(idInterval===0){
                     // duration = (new Date(intervals[idInterval+1]['data-beg']) - new Date(intervals[idInterval]['data-end']))/1000;
                     duration=(new Date()-new Date(intervals[idInterval]['data-beg']))/1000
                     clearTimeout(timerLogs);
+                    btnEnd.removeEventListener("click", boundHandler);
                     console.log(`Сеанс начнется через ${duration*-1} секунд, ID интервала: ${idInterval}`)
                     timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
                 }
                 else{
                     clearTimeout(timerLogs);
+                    btnEnd.removeEventListener("click", boundHandler);
                     createLog(intervals,dateStartTime,idInterval)
+                    boundHandler =endSeans.bind(null,timerLogs,dateStartTime,{once:true});
+                    btnEnd.addEventListener('click',boundHandler,{once:true})
                     idInterval++;
                 }
                 // if (idInterval!=intervals.length){
@@ -118,8 +135,8 @@ export  class ImitatorUtils{
                 // }
             }
             else{
-                clearTimeout(timerLogs);
-                console.log(`Конец`)
+                // clearTimeout(timerLogs);
+                ImitatorUtils.logEndSeans(timerLogs,dateStartTime);
             }
         }
 
@@ -361,9 +378,9 @@ export  class ImitatorUtils{
                 for (const [key, value] of Object.entries(data)) {
                     console.log(result)
                     if (typeof(value)!='object') {
-                        if (key=='date-time-call') {
+                        if (key==='date-time-call') {
                             createInformationRequest.innerHTML+=`<br><div style="
-            font-size: calc(1.2rem);">Начало сеанса связи:</div>`;
+                            font-size: calc(1.2rem);">Начало сеанса связи:</div>`;
                             document.getElementById('response3').innerHTML+=`<div>СОВ: Инициирование сеанса связи</div>`;
                             createInformationRequest.innerHTML+=`<div>СОВ: Инициирование сеанса связи</div>`;
                             createInformationRequest.innerHTML+=`<div>СОВ:Время инициирования сеанса связи: ${new Date(value).toLocaleString()}</div>`;
@@ -397,6 +414,48 @@ export  class ImitatorUtils{
                 return true;
             }
 
+        }
+    }
+
+
+    /**
+     * Отображение завершения сеанса связи.
+     * @param {number} timer -интервал для переходов между данными сеанса связи.
+     * @param {Date} dataStart -время начала сеанса связи.
+     */
+     static logEndSeans(timer,dataStart){
+        clearTimeout(timer);
+        const elemResponse=document.getElementById('response3'),elemRequest=document.querySelector('.information_request');
+        elemResponse.innerHTML+=`<br><div  style="
+                            font-size: calc(1.2rem);" class="header-log">Завершение сеанса связи:</div>`;
+        elemResponse.innerHTML+=`<div>СУРР: Сеанс завершен</div>`;
+        elemResponse.innerHTML+=`<div>СУРР: Время завершения сеанса связи: ${new Date().toLocaleString()}</div>`;
+
+        elemRequest.innerHTML+=`<br><div  style="
+                            font-size: calc(1.2rem);" class="header-log">Завершение сеанса связи:</div>`;
+        elemRequest.innerHTML+=`<div>СУРР: Сеанс завершен</div>`;
+        elemRequest.innerHTML+=`<div>СУРР: Время завершения сеанса связи: ${new Date().toLocaleString()}</div>`;
+
+    }
+
+    /**
+     * Архивация сеанса связи.
+     * @param {Object} data -данные для архивации сеанса связи.
+     */
+    static async endSovSeans(data){
+        try {
+            const response = await fetch(`http://${Utils.getTestUrl()}/sov_surr/sov_surr/Delete_plan_sov`, {
+                method: "POST", // or 'PUT'
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            console.log("Success:", response.status);
+        }
+        catch (error) {
+            console.error("Error:", error);
         }
     }
 }
