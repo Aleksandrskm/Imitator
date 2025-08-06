@@ -136,6 +136,7 @@ export  class ImitatorUtils{
             }
             else{
                 // clearTimeout(timerLogs);
+                btnEnd.removeEventListener("click", boundHandler);
                 ImitatorUtils.logEndSeans(timerLogs,dateStartTime);
             }
         }
