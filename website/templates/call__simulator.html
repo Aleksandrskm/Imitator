@@ -5,7 +5,7 @@
     <span class="loader"></span>
     <span class="loader-container__title">Загрузка...</span>
 </div>  
-    <h2>Имитатор одиночных вызовов</h2>
+    <h2>Имитатор одиночных вызовов с планированием на период времени</h2>
 <div class="content">
     
     <div class="input_parameters_imitator">
@@ -115,7 +115,7 @@
 <!--            <span>Минимальная продолжительность сеанса,сек</span>-->
 <!--            <input id="min-call-time" type="text" value="30">-->
         </div>
-        <div class="radio-dvi">
+        <div class="radio-dvi" style="display: none">
             <span>Продолжительность сеанса:</span>
             <input type="radio" value="1" name="radio-time" class="time_call-rand" checked>
             <span>Случайная</span>
@@ -169,6 +169,6 @@
     </div>
     
 </div>
-    
-    
+
+<script src="{{ url_for('static',filename='js/sovImitator.js') }}"type="module"></script>
 {% endblock %}
