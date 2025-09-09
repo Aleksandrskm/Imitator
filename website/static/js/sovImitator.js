@@ -5,7 +5,7 @@ import {Loader} from "./Loader.js";
 
 
 document.addEventListener('DOMContentLoaded', ()=>{
-
+    let countsSession={countSession:0};
         const imgRe=document.querySelector('.re-date');
         imgRe.addEventListener('click',()=>{
             if (document.querySelector('.coord-rand').checked) {
@@ -76,10 +76,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
             // }
             const loader = new Loader('.loader-container');
             loader.show('Загрузка данных с сервера');
-            ImitatorUtils.calculateFirstAvailableInterval(data).then(()=>{
+            ImitatorUtils.calculateFirstAvailableInterval(data,countsSession).then(()=>{
                 loader.close();
                 document.getElementById('response3').style.display='block';
                 document.getElementById("task-btn_cansel").disabled = false;
+
             });
         });
     Utils.viewAbonents('abonent-select','.number');
