@@ -283,7 +283,7 @@ img {
     font-family: Arial, sans-serif; 
 }
 .input_parameters_imitator{
-    overflow-y: auto;
+    /*overflow-y: auto;*/
     display: flex;
     flex-direction: column;
     /* justify-content: center; */
@@ -335,8 +335,14 @@ img {
     font-weight: bold;
     font-family: Arial, sans-serif;
 }
-
+#container_calls{
+    overflow: auto;
+}
+#containers_calls{
+    overflow: auto;
+}
 .row_com {
+    overflow: auto;
     display: flex;
     margin: 10px 10px;
 }
