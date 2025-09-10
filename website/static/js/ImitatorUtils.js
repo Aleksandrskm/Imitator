@@ -22,6 +22,147 @@ export  class ImitatorUtils{
         }
     }
 
+    /**
+     * Отправка сеанса связи(старая версия).
+     * @param  {Object}body - данные для создания сеанса связи.
+     */
+    static async  addPlanSv(body,arrIdsSvSenas,rusKeys,rusKeuAll){
+        try {
+            const response = await fetch(`http://${Utils.getTestUrl()}/plan_sv/calc?ist=71`, {
+                method: "POST", // or 'PUT'
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Source":71
+                },
+                body: JSON.stringify(body),
+            });
+            const result = await response.json();
+            console.log("Success:", result);
+
+            arrIdsSvSenas.push(result)
+            document.getElementById('containers_calls').innerHTML+=`<div class="header-log">СУРР:План сеанса связи под номером ${result} успешно создан </div>`;
+            document.getElementById('containers_calls').innerHTML+=`<div class="header-log">СОВ:Время ответа от СУРР ${new Date().toLocaleString()}</div><br>`;
+            const elementViewSvPlan=document.createElement('div');
+            const elementViewIntervals=document.createElement('div');
+            const elementViewIntervalsRes=document.createElement('div');
+            ImitatorUtils.getDetailsPlanSv(result).then((data)=>{
+                data['cutted_rss_intervals'].forEach(planInterval=>{
+                    const elements=document.createElement('div');
+                    const nameInterval=document.createElement('div')
+                    nameInterval.innerText='Данные интервала: ';
+                    nameInterval.classList.add('name-interval');
+                    elements.append(nameInterval)
+                    Object.keys(planInterval).forEach(key=>{
+                        const field=rusKeys[key]
+                        console.log('key: ',field,'value: ',planInterval[key])
+                        const element=document.createElement('div');
+                        element.innerText=`${field}:${planInterval[key]}`
+                        elements.appendChild(element)
+                    })
+                    elements.classList.add('sv-seans-interval')
+                    elementViewIntervals.append(elements)
+                })
+                data['cutted_abonent_result_intervals'].forEach(resultInterval=>{
+                    const elements=document.createElement('div');
+                    const nameInterval=document.createElement('div')
+                    nameInterval.innerText='Данные абонента: ';
+                    nameInterval.classList.add('name-interval');
+                    elements.append(nameInterval)
+                    Object.keys(resultInterval).forEach(key=>{
+                        const field=rusKeuAll[key]
+                        console.log('key: ',field,'value: ',resultInterval[key])
+                        const element=document.createElement('div');
+                        element.innerText=`${field}:${resultInterval[key]}`
+                        elements.appendChild(element)
+
+                    })
+                    elements.classList.add('sv-seans-interval-res')
+                    elementViewIntervalsRes.append(elements)
+                })
+                const elementHeaderSv=document.createElement('div');
+                elementHeaderSv.innerText=`План сеанса связи:${result}`
+                if (data['cutted_rss_intervals'].length==0 && data['cutted_abonent_result_intervals'].length==0)
+                {
+                    elementHeaderSv.innerText=`В плане сеанса связи:${result} нет данных`
+
+                }
+                elementViewSvPlan.id=`${result}`
+                elementViewSvPlan.classList.add('sv-seans')
+                elementViewIntervals.classList.add('sv-seans-intervals')
+                elementViewIntervalsRes.classList.add('sv-seans-res-intervals')
+
+
+                elementHeaderSv.classList.add('header-log')
+                elementViewSvPlan.append(elementHeaderSv)
+                elementViewSvPlan.append(elementViewIntervals)
+                elementViewSvPlan.append(elementViewIntervalsRes)
+                console.log(elementViewIntervals)
+                console.log(elementViewIntervalsRes)
+                console.log(elementViewSvPlan)
+                document.querySelector('#response3').append(elementViewSvPlan)
+                return result;
+            })
+
+
+
+
+            return result;
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+    /**
+     * Отправка сеанса связи(старая версия).
+     * @param  {Object}idSvZaprosSeans - id сеанса связи для архивирования сеанса связи.
+     */
+    static async  archivatePlanSv(idSvZaprosSeans){
+        try {
+            const response = await fetch(`http://${Utils.getTestUrl()}/plan_sv/${idSvZaprosSeans}/archivate`, {
+                method: "POST", // or 'PUT'
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Source":71
+                },
+            });
+            const result = await response.json();
+            console.log("Success:", result);
+            return result;
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+
+
+
+    /**
+     * Отправка сеанса связи(старая версия).
+     * @param  {Number}idSvZaprosSeans - id сеанса связи для получения данных сеанса связи.
+     */
+    static async  getDetailsPlanSv(idSvZaprosSeans){
+        try {
+            const response = await fetch(`http://${Utils.getTestUrl()}/plan_sv/${idSvZaprosSeans}/details?mode=active`, {
+                method: "GET", // or 'PUT'
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Source":71
+                },
+            });
+            const result = await response.json();
+            console.log("Success:", result);
+            return result;
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+    /**
+     * Отправка сеанса связи(старая версия).
+     * @param  {Number}id - айди сеанса связи для архивации.
+     * @param  {String}dataEnd - время завершения сеанса.
+     * @param  {String}timeSeans - время сеанса связи.
+     * @param  {String}timeCall - время разговора.
+     * @param {Number} idSeansRes - результат сеанса связи.
+     */
     static async  addArchivalSession(id,dataEnd,timeSeans,timeCall,idSeansRes){
         try {
             const response = await fetch(`http://${Utils.getTestUrl()}/CommunicationAvailability/AddArchivalSession?ID=${id}&ist=71
@@ -42,7 +183,7 @@ export  class ImitatorUtils{
     /**
      * Освобождение ОЧР сеанса связи(старая версия).
      * @param  {Object}data - все данные для освобождения сеанса связи.
-     * @param{Number} stId - номер КА для освобождения ячеек ОЧР.
+     * @param{Number} stId - номер-КА для освобождения ячеек ОЧР.
      */
     static async  postRelaeseFrRes(data,stId){
         try {
@@ -384,6 +525,7 @@ export  class ImitatorUtils{
                     duration=intervals[idInterval]['duration']*1000;
                     console.log(`Следующий сеанс начнется через: :${duration/1000} секунд`)
                     console.log('dateStartTime:',dateStartTime.toLocaleString())
+                    console.log('new Date:',new Date(dateStartTime.toLocaleString()));
                     console.log('seans:',idCall)
                     console.log('следующий интервал :',next)
                     createBeginningLog(dateStartTime,result,idInterval,idCall);
@@ -418,6 +560,7 @@ export  class ImitatorUtils{
                     duration=intervals[idInterval]['duration']*1000;
                     console.log(`Следующий сеанс начнется через: :${duration/1000} секунд`)
                     console.log('dateStartTime:',dateStartTime.toLocaleString())
+                    console.log('new Date:',new Date(dateStartTime.toLocaleString()));
                     console.log('seans:',idCall)
                     console.log('следующий интервал :',next)
                     createBeginningLog(dateStartTime,result,idInterval,idCall);
@@ -437,6 +580,7 @@ export  class ImitatorUtils{
                     duration=intervals[idInterval]['duration']*1000;
                     console.log(`Следующий сеанс начнется через: :${duration/1000} секунд`)
                     console.log('dateStartTime:',dateStartTime.toLocaleString())
+                    console.log('new Date:',new Date(dateStartTime.toLocaleString()));
                     console.log('seans:',idCall)
                     console.log('следующий интервал :',next)
                     createBeginningLog(dateStartTime,result,idInterval,idCall);
@@ -456,13 +600,17 @@ export  class ImitatorUtils{
                     clearTimeout(timerLogs);
                     btnEnd.removeEventListener("click", boundHandler);
                     if ((duration*-1)>5 && flag){
-                        document.querySelector('.information_request').innerHTML+=`<div>Сеанс начнется через ${duration*-1} секунд</div>`
-                        document.querySelector('#response3').innerHTML+=`<div>Сеанс начнется через ${duration*-1} секунд</div>`
-                        flag=false;
 
+                        document.querySelector(`#container_calls`).innerHTML+=`<div>Сеанс может быть доступен только через ${duration*-1} секунд</div>`
+                        document.querySelector('#response3').innerHTML+=`<div>Сеанс может быть доступен только через ${duration*-1} секунд</div>`
+                        flag=false;
+                        timerLogs=setTimeout(createLogs,100,dateStartTime,result,intervals.length);
+                    }
+                    else {
+                        timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
                     }
                     // console.log('Таймер duration:',duration);
-                    timerLogs=setTimeout(createLogs,duration,dateStartTime,result,idInterval);
+
                 }
                 else{
                     clearTimeout(timerLogs);
@@ -811,8 +959,8 @@ export  class ImitatorUtils{
             {
                 const elemResponse=document.getElementById('response3'),elemRequests=document.querySelector('#containers_calls'),elemRequest=document.createElement('div');
                 elemRequest.id="container_calls";
-                elemResponse.innerHTML+=`<br><div  class="header-log">Вызов:</div>`;
-                elemRequest.innerHTML+=`<br><div  style="
+                elemResponse.innerHTML+=`<div  class="header-log">Вызов:</div>`;
+                elemRequest.innerHTML+=`<div  style="
                 font-size: calc(1.2rem);">Вызов:</div>`;
                 elemResponse.innerHTML+=`<div>ID запроса на инициирование сеанса связи:${data['sessions-id']}
                 ID Вызывающего Абонента: ${data['abonents'][0]['terminal-id']}  ID Вызываемого Абонента: ${data['abonents'][1]['terminal-id']}</div>` ;
@@ -1019,12 +1167,31 @@ export  class ImitatorUtils{
      static logEndSeans(timer,dataStart,id,idCall){
         clearTimeout(timer);
         console.log('end seans:')
-
-        const elemResponse=document.querySelector(`.call_id_${idCall}`),elemRequest=document.querySelector(`.call_id_req_${idCall}`);
-        elemResponse.innerHTML+=`<br><div  style="
+        let elemResponse,elemRequest;
+        if(document.querySelector(`.call_id_${idCall}`) && document.querySelector(`.call_id_req_${idCall}`)){
+             elemResponse=document.querySelector(`.call_id_${idCall}`);
+             elemRequest=document.querySelector(`.call_id_req_${idCall}`);
+            elemResponse.innerHTML+=`<br><div  style="
                             font-size: calc(1.2rem);" class="header-log">Завершение сеанса связи:</div>`;
-        elemResponse.innerHTML+=`<div>СУРР: Сеанс ${id} завершен</div>`;
-        elemResponse.innerHTML+=`<div>СУРР: Время завершения сеанса связи: ${new Date().toLocaleString()}</div>`;
+            elemResponse.innerHTML+=`<div>СУРР: Сеанс ${id} завершен</div>`;
+            elemResponse.innerHTML+=`<div>СУРР: Время завершения сеанса связи: ${new Date().toLocaleString()}</div>`;
+        }
+        else {
+            elemResponse=document.querySelectorAll(`#container_calls`)
+            elemResponse.forEach((elemResponse, id)=>{
+                if (id==idCall){
+                    elemResponse.innerHTML+=`<br><div  style="
+                            font-size: calc(1.2rem);" class="header-log">Завершение сеанса связи:</div>`;
+                    elemResponse.innerHTML+=`<div>СУРР: Сеанс ${id} завершен</div>`;
+                    elemResponse.innerHTML+=`<div>СУРР: Время завершения сеанса связи: ${new Date().toLocaleString()}</div>`
+                }
+
+            });
+            elemRequest=document.querySelector(`#response3`);
+
+        }
+        console.log(elemRequest,elemResponse)
+
 
         elemRequest.innerHTML+=`<br><div  style="
                             font-size: calc(1.2rem);" class="header-log">Завершение сеанса связи:</div>`;
