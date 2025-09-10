@@ -20,3 +20,9 @@ def function_calls():
 @views.route('/call_flow_sov')
 def function_calls_flow():
     return render_template('call_flow_sov.html')
+@views.route('/call_sim_time')
+def function_call_sim_time():
+    return render_template('call_sim_time.html')
+@views.route('/call_flow_time')
+def function_call_flow_time():
+    return render_template('call_flow_time.html')

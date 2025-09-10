@@ -12,6 +12,7 @@
     
 }
 #response3{
+    background-color: white;
     min-height: 24vh;
     overflow-y: scroll;
     /* max-height: 300px; */
@@ -342,6 +343,7 @@ img {
     overflow: auto;
 }
 .row_com {
+    min-height: 275px;
     overflow: auto;
     display: flex;
     margin: 10px 10px;
@@ -535,13 +537,32 @@ body {
   font-size: 20px; /* Устанавливаем размер текста кнопки */
   padding: 10px 20px; /* Устанавливаем отступы внутри кнопки */
   margin: 10px;
-  width: 500px;
+  width: 600px;
   height: 65px;
   border-radius: 10px;
   text-align: center;
 
 }
+.sv-seans-interval,.sv-seans-interval-res{
+    margin-bottom: 20px;
+}
+/*.sv-seans-interval div{*/
+/*    margin-bottom: 5px;*/
+/*}*/
 
+/*.sv-seans-intervals div{*/
+/*    margin-bottom: 5px;*/
+/*}*/
+/*.sv-seans-res-intervals div{*/
+/*    margin-bottom: 5px;*/
+/*}*/
+.name-interval{
+    font-size: 1.15rem;
+
+}
+.sv-seans{
+    margin-bottom: 20px;
+}
 .butt button:hover {
     background-color: #C0C0C0;
 }
@@ -600,6 +621,7 @@ body {
 }
 .header-log{
     font-size: calc(1.2rem);
+    margin-bottom: 5px;
     
 }
 #typeTime{

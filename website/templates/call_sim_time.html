@@ -5,7 +5,7 @@
     <span class="loader"></span>
     <span class="loader-container__title">Загрузка...</span>
 </div>
-<h2>Имитатор потока вызовов с планированием на период времени (в режиме реального времени)</h2>
+<h2>Имитатор одиночных вызовов с планированием на период времени</h2>
 <div class="content">
 
     <div class="input_parameters_imitator">
@@ -61,7 +61,7 @@
                         <span>Вручную</span>
                         <input type="radio" value="1" name="radio-coord" class="time_call coord-rand" checked>
                         <span>Случайным образом</span>
-                        <img class="re-date-flow" src="../static/img/re.png">
+                        <img class="re-date" src="../static/img/re.png">
                     </div>
                 </div>
                 <br>
@@ -138,21 +138,7 @@
 
 
                 </div>
-                <div>
-                    <span>Количество вызовов</span>
-                    <input id="quantity_calls" type="text" value="10">
-                    <span>за</span>
-                    <input id="time_calls" type="text" value="100">
-                    <span>сек</span>
-                </div>
-                <div class="radio-dvi">
 
-                    <span>Очередность вызов:</span>
-                    <input type="radio" value="1" name="radio-call" class="priority-checkbox" checked>
-                    <span>Монотонная</span>
-                    <input type="radio" value="2" name="radio-call" class="priority-rand-checkbox">
-                    <span>Случайная</span>
-                </div>
             </div>
             <!-- <div class="column3_com"> -->
 
@@ -161,7 +147,7 @@
         </div>
 
         <div class="btn2">
-            <button id="task-btn_sim_flow" onclick="">Вызов</button>
+            <button id="task-btn_sim" onclick="">Вызов</button>
             <button id="task-btn_cansel" disabled>Прервать вызов</button>
         </div>
 
@@ -174,7 +160,7 @@
           font-size: calc(1.2rem);">Характеристики Абонента:</div>
           <div id="latitude-res">Широта, градусы: </div>
           <div id="long-res">Долгота, градусы: </div> -->
-
+<!--            <br>-->
         </span>
 
     </div>
@@ -185,5 +171,5 @@
 
 </div>
 
-<script src="{{ url_for('static',filename='js/ImitatorFlowSov.js') }}"type="module"></script>
+<script src="{{ url_for('static',filename='js/imitatorSvPlan.js') }}"type="module"></script>
 {% endblock %}
