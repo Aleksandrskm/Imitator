@@ -45,8 +45,8 @@ export  class Utils{
 
     /**
      * Получение даты для сеанса связи в нужном формате.
-     * @param  {Date }dateControl - минимальное значение числа.
-     * @param {Date} timeControl - максимальное значение числа.
+     * @param  {Element }dateControl - минимальное значение числа.
+     * @param {Element} timeControl - максимальное значение числа.
      */
     static getDateTimes(dateControl,timeControl){
         let dateControlYear=+dateControl.value.substring(0,4);
