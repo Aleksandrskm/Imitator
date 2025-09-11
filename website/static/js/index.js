@@ -3,7 +3,7 @@ import {Utils} from "./Utils.js";
 import {ImitatorUtils} from "./ImitatorUtils.js";
 import {Loader} from "./Loader.js";
 function release_all_frequency_resources(){
-    const url = `http://${Utils.getTestUrl()}/CommunicationAvailability/ReleaseAllFrequencyResources?ist=71`;
+    const url = `http://${Utils.getUrl()}/CommunicationAvailability/ReleaseAllFrequencyResources?ist=71`;
     fetch(url, {
         method: 'POST',
         headers: {
@@ -28,7 +28,7 @@ function release_all_frequency_resources(){
     });
 }
 function clearActiveSessions(){
-  const url = `http://${Utils.getTestUrl()}/CommunicationAvailability/ClearActiveSessions?ist=71`;
+  const url = `http://${Utils.getUrl()}/CommunicationAvailability/ClearActiveSessions?ist=71`;
   fetch(url, {
       method: 'GET',
       headers: {
