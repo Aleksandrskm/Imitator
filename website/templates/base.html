@@ -27,9 +27,13 @@
     {% block content %}
 
     <main class="butt">
-        <a href="/call__simulator"><button class="btn">Имитатор одиночных вызовов</button></a>
+        <a href="/call_sim_time"><button class="btn">Имитатор одиночных вызовов с планированием на период времени</button></a>
+        <a href="/call_flow_time"><button class="btn">Имитатор потока вызовов с планированием на период времени</button></a>
+        <a href="/call__simulator"><button class="btn">Имитатор одиночных вызовов с планированием на период времени (в режиме реального времени)</button></a>
+        <a href="/call_flow_sov"><button class="btn">Имитатор потока вызовов с планированием на период времени (в режиме реального времени)</button></a>
+        <a href="/calls_simulator"><button class="btn">Имитатор одиночных вызовов</button></a>
         <a href="/call_flow_simulator"><button class="btn">Имитатор потока вызовов</button></a>
-        <button class="btn" onclick="release_all_frequency_resources()">Освободить частотный ресурс КА</button>
+        <button class="btn" id="clear_btn">Освободить частотный ресурс КА</button>
     </main>
 
     {% endblock %}
@@ -47,6 +51,6 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"type="module"></script>
 </body>
 </html>

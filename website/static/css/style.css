@@ -12,12 +12,14 @@
     
 }
 #response3{
+    border: 2px black solid;
+    background-color: white;
     min-height: 24vh;
     overflow-y: scroll;
     /* max-height: 300px; */
     display: none;
 }
-#abonent-select{
+#abonent-select,#abonent-select-rec{
     margin-bottom: 10px;
     margin-top: 10px;
     margin-right: 20px;
@@ -283,7 +285,7 @@ img {
     font-family: Arial, sans-serif; 
 }
 .input_parameters_imitator{
-    overflow-y: auto;
+    /*overflow-y: auto;*/
     display: flex;
     flex-direction: column;
     /* justify-content: center; */
@@ -313,13 +315,18 @@ img {
     font-weight: bold;
     font-family: Arial, sans-serif;
 }
-.input_parameters_imitator span {
+.input_parameters_imitator span,.input_parameters_imitator label {
     margin: 3px 0;
     font-size: calc(1.0rem);
     font-weight: bold;
     font-family: Arial, sans-serif;
 }
-
+.data-abonent{
+    margin: 3px 0;
+    font-size: calc(1.0rem);
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
 .input_parameters_imitator input {
     margin: 7px;
     padding: 7px;
@@ -330,8 +337,15 @@ img {
     font-weight: bold;
     font-family: Arial, sans-serif;
 }
-
+#container_calls{
+    overflow: auto;
+}
+#containers_calls{
+    overflow: auto;
+}
 .row_com {
+    min-height: 275px;
+    overflow: auto;
     display: flex;
     margin: 10px 10px;
 }
@@ -413,6 +427,12 @@ img {
     padding: 10px;
 
   }
+  .number-rec {
+    display: none;
+    margin: 10px;
+    padding: 10px;
+
+  }
 .column2_vi {
     display: flex;
     flex-direction: column;
@@ -438,8 +458,8 @@ img {
 }
 
 header {
-    grid-template-columns: 1fr 2fr 1fr;
-    white-space: nowrap;
+    grid-template-columns: 1fr 5fr 1fr;
+    /*white-space: nowrap;*/
     background-color: #999999;
     height: 75px;
     width: 100%;
@@ -518,13 +538,32 @@ body {
   font-size: 20px; /* Устанавливаем размер текста кнопки */
   padding: 10px 20px; /* Устанавливаем отступы внутри кнопки */
   margin: 10px;
-  width: 500px;
-  height: 55px;
+  width: 600px;
+  height: 65px;
   border-radius: 10px;
   text-align: center;
 
 }
+.sv-seans-interval,.sv-seans-interval-res{
+    margin-bottom: 20px;
+}
+/*.sv-seans-interval div{*/
+/*    margin-bottom: 5px;*/
+/*}*/
 
+/*.sv-seans-intervals div{*/
+/*    margin-bottom: 5px;*/
+/*}*/
+/*.sv-seans-res-intervals div{*/
+/*    margin-bottom: 5px;*/
+/*}*/
+.name-interval{
+    font-size: 1.15rem;
+
+}
+.sv-seans{
+    margin-bottom: 20px;
+}
 .butt button:hover {
     background-color: #C0C0C0;
 }
@@ -583,6 +622,7 @@ body {
 }
 .header-log{
     font-size: calc(1.2rem);
+    margin-bottom: 5px;
     
 }
 #typeTime{
