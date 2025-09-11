@@ -12,6 +12,7 @@
     
 }
 #response3{
+    border: 2px black solid;
     background-color: white;
     min-height: 24vh;
     overflow-y: scroll;
@@ -457,8 +458,8 @@ img {
 }
 
 header {
-    grid-template-columns: 1fr 2fr 1fr;
-    white-space: nowrap;
+    grid-template-columns: 1fr 5fr 1fr;
+    /*white-space: nowrap;*/
     background-color: #999999;
     height: 75px;
     width: 100%;
