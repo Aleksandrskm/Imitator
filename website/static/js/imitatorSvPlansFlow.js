@@ -4,6 +4,14 @@ import {ImitatorUtils} from "./ImitatorUtils.js";
 import {Utils} from "./Utils.js";
 
 let countsSession={countSession:0};
+ImitatorUtils.getInformationAboutAllAbonents().then((data)=>{
+    console.log(data);
+    Utils.createCountAbs(data)
+    Utils.viewAllAbonents(data,2)
+
+    // Utils.viewAbonents('abonent-select','.number');
+    // Utils.viewAbonents('abonent-select-rec','.number-rec')
+})
 const rusKeys={
     ID:'Идентификатор',
     ID_SV_ZAPROS_SEANS:'Ссылка на сеанс связи',
@@ -30,21 +38,22 @@ const rusKeuAll={
     DURATION:'Продолжительность, сек'
 }
 const btnFlawStart=document.querySelector('#task-btn_sim_flow');
-const imageRe=document.querySelector('.re-date-flow');
-imageRe.addEventListener('click',()=>{
-    if (document.querySelector('.priority-checkbox').checked) {
-        const randLong=Utils.getRandomNumber(27,169)
-        const randLat=Utils.getRandomNumber(41,77)
-        document.getElementById('lat3').value=randLat;
-        document.getElementById('lon3').value=randLong;
-    }
-});
+// const imageRe=document.querySelector('.re-date-flow');
+// imageRe.addEventListener('click',()=>{
+//     if (document.querySelector('.priority-checkbox').checked) {
+//         const randLong=Utils.getRandomNumber(27,169)
+//         const randLat=Utils.getRandomNumber(41,77)
+//         document.getElementById('lat3').value=randLat;
+//         document.getElementById('lon3').value=randLong;
+//     }
+// });
 const dateControl = document.querySelector('input[type="date"]');
 dateControl.value=Utils.getDateTime().slice(0,10);
 const timeControl = document.querySelector('input[type="time"]');
 let numberTime=Number(Utils.getDateTime().substring(11,13));
 let timeVal=Utils.getDateTime().substring(13,19);
 if (numberTime>=10) {
+    console.log('timeControl',timeControl)
     timeControl.value=`${numberTime}${timeVal}`;
 }
 else{
@@ -56,16 +65,25 @@ btnFlawStart.addEventListener('click',()=>{
     countsSession.countSession=0;
     const loader = new Loader('.loader-container');
     loader.show('Загрузка данных с сервера');
-    const select = document.getElementById('abonent-select');
-    let selIndex=select.selectedIndex;
-    if (!selIndex) {
-        selIndex+=1;
-    }
-    const selectRec = document.getElementById('abonent-select-rec');
-    let selIndexRec=selectRec.selectedIndex;
-    if (!selIndexRec) {
-        selIndexRec+=2;
-    }
+    const latData=[];
+    const lonData=[];
+    const absData=[];
+    document.querySelectorAll('select.abs').forEach(select=>{
+        console.log(select[select.selectedIndex].innerHTML)
+
+        absData.push(select[select.selectedIndex].innerHTML);
+    });
+
+    document.querySelectorAll('input.input_abs').forEach((select,index)=>{
+        if (index%2==0){
+            latData.push(select.value);
+            console.log(select.value)
+        }
+        else {
+            lonData.push(select.value);
+        }
+
+    });
     let formattedDate;
     let dataBeg;
     if (document.querySelector('.timer_call-current').checked) {
@@ -85,6 +103,15 @@ btnFlawStart.addEventListener('click',()=>{
         const duration = parseInt(document.querySelector('#max-time-dur').value) * 1000;
         formattedDate = new Date(startDate.getTime() + duration).toISOString().replace('Z', '+00:00');
     }
+    const callers=[];
+    absData.forEach((ab,index)=>{
+        const obj={}
+        obj.name = ab;
+        obj.lat=latData[index];
+        obj.lon=lonData[index];
+        obj.radius=2500;
+        callers.push(obj);
+    })
     let data =
         {
             "params": {
@@ -94,20 +121,7 @@ btnFlawStart.addEventListener('click',()=>{
                 "min_session_time_in_sec": document.querySelector('#min-time-dur').value,
                 "acceptable_session_time_in_sec": 100
             },
-            "callers": [
-                {
-                    "name": "А1",
-                    "lat": document.getElementById('lat3').value,
-                    "lon": document.getElementById('lon3').value,
-                    "radius": 2500
-                },
-                {
-                    "name": "А2",
-                    "lat": document.getElementById('lat6').value,
-                    "lon": document.getElementById('lon6').value,
-                    "radius": 2500
-                }
-            ]
+            "callers": callers
         }
 
     const arrTimers=[];
@@ -155,6 +169,34 @@ btnFlawStart.addEventListener('click',()=>{
                 const duration = parseInt(document.querySelector('#max-time-dur').value) * 1000;
                 formattedDate = new Date(startDate.getTime() + duration).toISOString().replace('Z', '+00:00');
             }
+            const latData=[];
+            const lonData=[];
+            const absData=[];
+            document.querySelectorAll('select.abs').forEach(select=>{
+                console.log(select[select.selectedIndex].innerHTML)
+
+                absData.push(select[select.selectedIndex].innerHTML);
+            });
+
+            document.querySelectorAll('input.input_abs').forEach((select,index)=>{
+                if (index%2==0){
+                    latData.push(select.value);
+                    console.log(select.value)
+                }
+                else {
+                    lonData.push(select.value);
+                }
+
+            });
+            const callers=[];
+            absData.forEach((ab,index)=>{
+                const obj={}
+                obj.name = ab;
+                obj.lat=latData[index];
+                obj.lon=lonData[index];
+                obj.radius=2500;
+                callers.push(obj);
+            })
             data =
                 {
                     "params": {
@@ -164,20 +206,7 @@ btnFlawStart.addEventListener('click',()=>{
                         "min_session_time_in_sec": document.querySelector('#min-time-dur').value,
                         "acceptable_session_time_in_sec": 100
                     },
-                    "callers": [
-                        {
-                            "name": "А1",
-                            "lat": document.getElementById('lat3').value,
-                            "lon": document.getElementById('lon3').value,
-                            "radius": 2500
-                        },
-                        {
-                            "name": "А2",
-                            "lat": document.getElementById('lat6').value,
-                            "lon": document.getElementById('lon6').value,
-                            "radius": 2500
-                        }
-                    ]
+                    "callers": callers
                 }
         }
         else if (selectedSize===2) {
@@ -186,7 +215,7 @@ btnFlawStart.addEventListener('click',()=>{
         }
         console.log(btnFlawStart.disabled,'Кнопка отключена');
         console.log(data.lat,' ', data.lon);
-        ImitatorUtils.addPlanSv(data,arrIdsSvSenas,rusKeys,rusKeuAll).then(()=>{
+        ImitatorUtils.addPlanSv(data,arrIdsSvSenas,rusKeys,rusKeuAll,true).then(()=>{
             loader.close();
             ++countsSession.countSession;
             console.log(countsSession.countSession);

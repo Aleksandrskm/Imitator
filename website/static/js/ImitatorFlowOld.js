@@ -6,15 +6,34 @@ import {Utils} from "./Utils.js";
 let countsSession={countSession:0};
 
     const btnFlawStart=document.querySelector('#task-btn_sim_flow');
-    const imageRe=document.querySelector('.re-date-flow');
-    imageRe.addEventListener('click',()=>{
-        if (document.querySelector('.priority-checkbox').checked) {
-            const randLong=Utils.getRandomNumber(27,169)
-            const randLat=Utils.getRandomNumber(41,77)
-            document.getElementById('lat4').value=randLat;
-            document.getElementById('lon4').value=randLong;
-        }
-    });
+    // const imageRe=document.querySelector('.re-date-flow');
+    // imageRe.addEventListener('click',()=>{
+    //     if (document.querySelector('.priority-checkbox').checked) {
+    //         const randLong=Utils.getRandomNumber(27,169)
+    //         const randLat=Utils.getRandomNumber(41,77)
+    //         document.getElementById('lat4').value=randLat;
+    //         document.getElementById('lon4').value=randLong;
+    //     }
+    // });
+const dateControl = document.querySelector('input[type="date"]');
+dateControl.value=Utils.getDateTime().slice(0,10);
+const timeControl = document.querySelector('input[type="time"]');
+let numberTime=Number(Utils.getDateTime().substring(11,13));
+let timeVal=Utils.getDateTime().substring(13,19);
+if (numberTime>=10) {
+    timeControl.value=`${numberTime}${timeVal}`;
+}
+else{
+    timeControl.value=`0${numberTime}${timeVal}`;
+}
+ImitatorUtils.getInformationAboutAllAbonents().then((data)=>{
+    console.log(data);
+    Utils.createCountAbs(data)
+    Utils.viewAllAbonents(data,2)
+
+    // Utils.viewAbonents('abonent-select','.number');
+    // Utils.viewAbonents('abonent-select-rec','.number-rec')
+})
     btnFlawStart.addEventListener('click',()=>{
         document.getElementById('task-btn_cansel_flow').disabled=false;
         countsSession.countSession=0;
