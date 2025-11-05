@@ -15,37 +15,61 @@
             <div class="column2_com">
                 <div class="csus">Эмулятор СОВ</div>
                 <br>        
-        <div class="div-abonent">Данные абонента</div>
+        <div class="div-abonent">Данные абонентов</div>
                 <br>
-            <div class="data-abonent">
-                <span>Абонент:</span> <select  class="select" name="abonents" id="abonent-select">
-                    <option value="0">Выберите Абонента</option>
-                    <option value="1">Абонент 1</option>
-                    <option value="2">Абонент 2</option>
-                    </select>
-                    <span>Номер телефона: </span><span class="number hide">89000000001</span><span class="number hide">89000000001</span><span class="number hide">89000000002</span>
-            </div> 
-        <div class="data-abonent">
-            
-            <span>Широта, градусы</span>
-            <input id="lat4" type="text" value="51">
-            <span>Долгота, градусы</span>
-            <input id="lon4" type="text" value="39"> <img class="re-date-flow" src="../static/img/re.png">
-            
-            <!-- <span>Минимальная продолжительность сеанса,сек</span>
-            <input id="min-call-time" type="text" value="30"> -->
-        </div>
-        <div class="radio-dvi">
-            
-            <span>Координаты:</span>
-            <input type="radio" value="1" name="radio-coordinates" class="priority-checkbox" checked>
-            <span>Изменять</span>
-            <input type="radio" value="2" name="radio-coordinates" class="priority-rand-checkbox">
-            <span>Не изменять</span>
-        </div>
+                <div id="count-abs">
+                    <span>Выберите количество абонентов:</span>
+                </div>
+                <div class="test-ab"></div>
+<!--            <div class="data-abonent">-->
+<!--                <span>Абонент:</span> <select  class="select" name="abonents" id="abonent-select">-->
+<!--                    <option value="0">Выберите Абонента</option>-->
+<!--                    <option value="1">Абонент 1</option>-->
+<!--                    <option value="2">Абонент 2</option>-->
+<!--                    </select>-->
+<!--                    <span>Номер телефона: </span><span class="number hide">89000000001</span><span class="number hide">89000000001</span><span class="number hide">89000000002</span>-->
+<!--            </div>-->
+<!--        <div class="data-abonent">-->
+
+<!--            <span>Широта, градусы</span>-->
+<!--            <input id="lat4" type="text" value="51">-->
+<!--            <span>Долгота, градусы</span>-->
+<!--            <input id="lon4" type="text" value="39"> <img class="re-date-flow" src="../static/img/re.png">-->
+
+<!--            &lt;!&ndash; <span>Минимальная продолжительность сеанса,сек</span>-->
+<!--            <input id="min-call-time" type="text" value="30"> &ndash;&gt;-->
+<!--        </div>-->
+<!--        <div class="radio-dvi">-->
+
+<!--            <span>Координаты:</span>-->
+<!--            <input type="radio" value="1" name="radio-coordinates" class="priority-checkbox" checked>-->
+<!--            <span>Изменять</span>-->
+<!--            <input type="radio" value="2" name="radio-coordinates" class="priority-rand-checkbox">-->
+<!--            <span>Не изменять</span>-->
+<!--        </div>-->
         <br>
         <div class="div-abonent">Параметры вызова</div>
         <br>
+                <div class="data-abonent">
+                    <span>Время вызова :</span>
+                    <div class="radio-dvi">
+
+                        <br>
+                        <input id="now_time" type="radio" value="1" name="radio-timer" class="timer_call-current" checked>
+                        <label for="now_time">Использовать текущее время</label>
+
+                        <br>
+                        <br>
+
+
+                        <input  id="msk" type="radio" value="1" name="radio-timer" class="timer_call-self">
+                        <label for="msk">Вручную </label>
+                        <label for="start-time">(Московское время)</label>
+                        <input type="time" id="start-time" name="trip-start-time" value="" step="2" />
+
+                        <input type="date" id="start" name="trip-start" value=""/>
+                    </div>
+                </div>
         <div class="radio-dvi">
             <span>Продолжительность сеанса:</span>
             <input type="radio" value="1" name="radio-time" class="time_call-rand">
@@ -98,6 +122,7 @@
     </div>
     <div class="information_request">
         <span class="csus">Шлюз взаимодействия СОВ-СУРР</span>
+        <div id="containers_calls"></div>
     </div>
 </div>
 <script src="{{ url_for('static',filename='js/ImitatorFlowOld.js') }}"type="module"></script>

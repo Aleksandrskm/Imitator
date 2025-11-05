@@ -11,6 +11,7 @@ export  class ImitatorUtils{
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
+                    "X-Source":71
                 },
                 body: JSON.stringify(data),
             });
@@ -21,12 +22,57 @@ export  class ImitatorUtils{
             console.error("Error:", error);
         }
     }
+    /**
+     * Рассчитать план сеанса связи для СОВ-СУРР с получением каналов связи
+     * @param  {Object} data - данные для создания сеанса связи.
+     */
+    static  async addPlanSessionChannels(data) {
+        try {
+            const response = await fetch(`http://${Utils.getUrl()}/plan_sv/calculate_communication_session_plan_for_SOV_SURR`, {
+                method: "POST", // or 'PUT'
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Source":71
+                },
+                body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            console.log("Success:", result);
+            return result;
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+    /**
+     * Получить информацию обо всех абонентах.
+     */
+    static async  getInformationAboutAllAbonents() {
+        try {
+            const response = await fetch(`http://${Utils.getUrl()}/CommunicationAvailability/GetInformationAboutAllAbonents?ist=71`, {
+                method: "GET", // or 'PUT'
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Source":71
+                },
 
+            });
+            const result = await response.json();
+            console.log("Success:", result);
+            return result;
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+   
     /**
      * Отправка сеанса связи(старая версия).
      * @param  {Object}body - данные для создания сеанса связи.
+     * @param {Array} arrIdsSvSenas -массив id созданных планов сеанса связи
+     * @param {Object}rusKeys -объект с русскими наименованиями полей поля
+     * @param{Object} rusKeuAll -объект с русскими наименованиями ключей
+     * @param {Boolean} flag -параметр для логирования при выполнении запроса
      */
-    static async  addPlanSv(body,arrIdsSvSenas,rusKeys,rusKeuAll){
+    static async  addPlanSv(body,arrIdsSvSenas,rusKeys,rusKeuAll,flag){
         try {
             const response = await fetch(`http://${Utils.getUrl()}/plan_sv/calc?ist=71`, {
                 method: "POST", // or 'PUT'
@@ -36,76 +82,75 @@ export  class ImitatorUtils{
                 },
                 body: JSON.stringify(body),
             });
+
             const result = await response.json();
             console.log("Success:", result);
-
-            arrIdsSvSenas.push(result)
-            document.getElementById('containers_calls').innerHTML+=`<div class="header-log">СУРР:План сеанса связи под номером ${result} успешно создан </div>`;
-            document.getElementById('containers_calls').innerHTML+=`<div class="header-log">СОВ:Время ответа от СУРР ${new Date().toLocaleString()}</div><br>`;
-            const elementViewSvPlan=document.createElement('div');
-            const elementViewIntervals=document.createElement('div');
-            const elementViewIntervalsRes=document.createElement('div');
-            ImitatorUtils.getDetailsPlanSv(result).then((data)=>{
-                data['cutted_rss_intervals'].forEach(planInterval=>{
-                    const elements=document.createElement('div');
-                    const nameInterval=document.createElement('div')
-                    nameInterval.innerText='Данные интервала: ';
-                    nameInterval.classList.add('name-interval');
-                    elements.append(nameInterval)
-                    Object.keys(planInterval).forEach(key=>{
-                        const field=rusKeys[key]
-                        console.log('key: ',field,'value: ',planInterval[key])
-                        const element=document.createElement('div');
-                        element.innerText=`${field}:${planInterval[key]}`
-                        elements.appendChild(element)
+            console.log("Success:", response.status);
+            if(flag){
+                arrIdsSvSenas.push(result)
+                document.getElementById('containers_calls').innerHTML+=`<div class="header-log">СУРР:План сеанса связи под номером ${result} успешно создан </div>`;
+                document.getElementById('containers_calls').innerHTML+=`<div class="header-log">СОВ:Время ответа от СУРР ${new Date().toLocaleString()}</div><br>`;
+                const elementViewSvPlan=document.createElement('div');
+                const elementViewIntervals=document.createElement('div');
+                const elementViewIntervalsRes=document.createElement('div');
+                ImitatorUtils.getDetailsPlanSv(result).then((data)=>{
+                    data['cutted_rss_intervals'].forEach(planInterval=>{
+                        const elements=document.createElement('div');
+                        const nameInterval=document.createElement('div')
+                        nameInterval.innerText='Данные интервала: ';
+                        nameInterval.classList.add('name-interval');
+                        elements.append(nameInterval)
+                        Object.keys(planInterval).forEach(key=>{
+                            const field=rusKeys[key]
+                            console.log('key: ',field,'value: ',planInterval[key])
+                            const element=document.createElement('div');
+                            element.innerText=`${field}:${planInterval[key]}`
+                            elements.appendChild(element)
+                        })
+                        elements.classList.add('sv-seans-interval')
+                        elementViewIntervals.append(elements)
                     })
-                    elements.classList.add('sv-seans-interval')
-                    elementViewIntervals.append(elements)
-                })
-                data['cutted_abonent_result_intervals'].forEach(resultInterval=>{
-                    const elements=document.createElement('div');
-                    const nameInterval=document.createElement('div')
-                    nameInterval.innerText='Данные абонента: ';
-                    nameInterval.classList.add('name-interval');
-                    elements.append(nameInterval)
-                    Object.keys(resultInterval).forEach(key=>{
-                        const field=rusKeuAll[key]
-                        console.log('key: ',field,'value: ',resultInterval[key])
-                        const element=document.createElement('div');
-                        element.innerText=`${field}:${resultInterval[key]}`
-                        elements.appendChild(element)
+                    data['cutted_abonent_result_intervals'].forEach(resultInterval=>{
+                        const elements=document.createElement('div');
+                        const nameInterval=document.createElement('div')
+                        nameInterval.innerText='Данные абонента: ';
+                        nameInterval.classList.add('name-interval');
+                        elements.append(nameInterval)
+                        Object.keys(resultInterval).forEach(key=>{
+                            const field=rusKeuAll[key]
+                            console.log('key: ',field,'value: ',resultInterval[key])
+                            const element=document.createElement('div');
+                            element.innerText=`${field}:${resultInterval[key]}`
+                            elements.appendChild(element)
 
+                        })
+                        elements.classList.add('sv-seans-interval-res')
+                        elementViewIntervalsRes.append(elements)
                     })
-                    elements.classList.add('sv-seans-interval-res')
-                    elementViewIntervalsRes.append(elements)
+                    const elementHeaderSv=document.createElement('div');
+                    elementHeaderSv.innerText=`План сеанса связи:${result}`
+                    if (data['cutted_rss_intervals'].length==0 && data['cutted_abonent_result_intervals'].length==0)
+                    {
+                        elementHeaderSv.innerText=`В плане сеанса связи:${result} нет данных`
+
+                    }
+                    elementViewSvPlan.id=`${result}`
+                    elementViewSvPlan.classList.add('sv-seans')
+                    elementViewIntervals.classList.add('sv-seans-intervals')
+                    elementViewIntervalsRes.classList.add('sv-seans-res-intervals')
+
+
+                    elementHeaderSv.classList.add('header-log')
+                    elementViewSvPlan.append(elementHeaderSv)
+                    elementViewSvPlan.append(elementViewIntervals)
+                    elementViewSvPlan.append(elementViewIntervalsRes)
+                    console.log(elementViewIntervals)
+                    console.log(elementViewIntervalsRes)
+                    console.log(elementViewSvPlan)
+                    document.querySelector('#response3').append(elementViewSvPlan)
+                    return result;
                 })
-                const elementHeaderSv=document.createElement('div');
-                elementHeaderSv.innerText=`План сеанса связи:${result}`
-                if (data['cutted_rss_intervals'].length==0 && data['cutted_abonent_result_intervals'].length==0)
-                {
-                    elementHeaderSv.innerText=`В плане сеанса связи:${result} нет данных`
-
-                }
-                elementViewSvPlan.id=`${result}`
-                elementViewSvPlan.classList.add('sv-seans')
-                elementViewIntervals.classList.add('sv-seans-intervals')
-                elementViewIntervalsRes.classList.add('sv-seans-res-intervals')
-
-
-                elementHeaderSv.classList.add('header-log')
-                elementViewSvPlan.append(elementHeaderSv)
-                elementViewSvPlan.append(elementViewIntervals)
-                elementViewSvPlan.append(elementViewIntervalsRes)
-                console.log(elementViewIntervals)
-                console.log(elementViewIntervalsRes)
-                console.log(elementViewSvPlan)
-                document.querySelector('#response3').append(elementViewSvPlan)
-                return result;
-            })
-
-
-
-
+            }
             return result;
         } catch (error) {
             console.error("Error:", error);
@@ -170,6 +215,7 @@ export  class ImitatorUtils{
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
+                    "X-Source":71
                 },
             });
             const result = await response.json();
@@ -191,6 +237,7 @@ export  class ImitatorUtils{
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
+                    "X-Source":71
                 },
                 body: JSON.stringify(data),
             });
@@ -947,6 +994,7 @@ export  class ImitatorUtils{
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
+                    "X-Source":71
                 },
                 body: JSON.stringify(data)
             });
@@ -1210,6 +1258,7 @@ export  class ImitatorUtils{
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
+                    "X-Source":71
                 },
                 body: JSON.stringify(data)
             });
@@ -1231,6 +1280,7 @@ export  class ImitatorUtils{
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
+                    "X-Source":71
                 },
 
             });
@@ -1262,69 +1312,76 @@ export  class ImitatorUtils{
 
             const result = await response.json();
             console.log("Success:", result);
-            if (result.detail || Date.parse((new Date((result.start_datetime_iso)))<Date.parse(new Date())))  {
-                console.log(document.getElementById('max-time-dur').value);
-                const select = document.getElementById('abonent-select');
-                let selIndex=select.selectedIndex;
-                if (!selIndex) {
-                    selIndex+=1;
-                }
-                document.getElementById('response3').innerHTML+=`<br><div  class="header-log">Вызов:</div>`;
-                document.getElementById('response3').innerHTML+=`<div>ID запроса на инициирование сеанса связи:
-                ${new Date(data.start_datetime_iso).toLocaleString()} ID Абонента: ${selIndex}</div>`;
-                document.querySelector('.information_request').innerHTML+=`<div>ID запроса на инициирование сеанса связи:
-                ${new Date(data.start_datetime_iso).toLocaleString()} ID Абонента: ${selIndex}</div>`;
-                document.querySelector('.information_request').innerHTML+='<div>Отказано в сеансе связи</div><br> ';
-                document.querySelector('.information_request').innerHTML+=`<br><div class="header-log" style="display: block;">Характеристики Абонента:</div>`;
-                document.getElementById('response3').innerHTML+='<br><div>Отказано в сеансе связи</div> ';
-                document.getElementById('response3').innerHTML+=`<br><div>Характеристики Абонента:</div>`;
-                const latRes=document.createElement('div');
-                latRes.classList.add('latitude-res');
-
-
-                const lonRes=document.createElement('div')
-                if (document.querySelector('h2').innerHTML==='Имитатор потока вызовов') {
-                    latRes.innerHTML=`Широта, градусы: ${document.getElementById('lat4').value}`;
-                    lonRes.innerHTML=`Долгота, градусы: ${document.getElementById('lon4').value}`;
-                }
-                else{
-                    latRes.innerHTML=`Широта, градусы: ${document.getElementById('lat3').value}`;
-                    lonRes.innerHTML=`Долгота, градусы: ${document.getElementById('lon3').value}`;
-                }
-                lonRes.classList.add('long-res');
-                const latResInf=document.createElement('div');
-                latResInf.classList.add('latitude-res');
-                latResInf.innerHTML=`Широта, градусы: ${document.getElementById('lat3').value}`;
-                const lonResInf=document.createElement('div')
-                lonResInf.innerHTML=`Долгота, градусы: ${document.getElementById('lon3').value}`;
-                lonResInf.classList.add('long-res');
-                document.querySelector('.information_request').append(latResInf);
-                document.querySelector('.information_request').append(lonResInf);
-                document.getElementById('response3').append(latRes);
-                document.getElementById('response3').append(lonRes);
-
-            }
-            else
-            {
-                ImitatorUtils.createResponseOld(result,data);
-                const datesStartTime=new Date();
-                document.getElementById('response3').innerHTML+=`<br><div class="header-log">Сеанс связи:</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СУРР: Сеанс разрешен</div>`;
-                document.getElementById('response3').innerHTML+=`<div>СУРР: Время ответа от СУРР: ${datesStartTime.toLocaleString()}</div>`;
-                if (document.querySelector('.duplex-checkbox').checked) {
-                    let valDuplex=document.querySelector('.duplex-checkbox').value;
-                    ImitatorUtils.postOcFrREs(result.satellite_id)
-                        .then(respons=>{
-                            ImitatorUtils.createDataSessionCommunicationsOld(result,respons,datesStartTime,data,countSession);
-                        });
-                }
-                else if(document.querySelector('.simplex-checkbox').checked){
-                    ImitatorUtils.postOcFrREs(result.satellite_id).then(response=>{
-                        ImitatorUtils.createDataSessionCommunicationsOld(result,response,datesStartTime,data,countSession);
-                    });
-                }
+            if (response.ok) {
+                console.log("Success:", response.ok);
                 return result;
             }
+
+
+            // if (result.detail || Date.parse((new Date((result.start_datetime_iso)))<Date.parse(new Date())))  {
+            //     console.log(document.getElementById('max-time-dur').value);
+            //     const select = document.getElementById('abonent-select');
+            //     let selIndex=select.selectedIndex;
+            //     if (!selIndex) {
+            //         selIndex+=1;
+            //     }
+            //     document.getElementById('response3').innerHTML+=`<br><div  class="header-log">Вызов:</div>`;
+            //     document.getElementById('response3').innerHTML+=`<div>ID запроса на инициирование сеанса связи:
+            //     ${new Date(data.start_datetime_iso).toLocaleString()} ID Абонента: ${selIndex}</div>`;
+            //     document.querySelector('.information_request').innerHTML+=`<div>ID запроса на инициирование сеанса связи:
+            //     ${new Date(data.start_datetime_iso).toLocaleString()} ID Абонента: ${selIndex}</div>`;
+            //     document.querySelector('.information_request').innerHTML+='<div>Отказано в сеансе связи</div><br> ';
+            //     document.querySelector('.information_request').innerHTML+=`<br><div class="header-log" style="display: block;">Характеристики Абонента:</div>`;
+            //     document.getElementById('response3').innerHTML+='<br><div>Отказано в сеансе связи</div> ';
+            //     document.getElementById('response3').innerHTML+=`<br><div>Характеристики Абонента:</div>`;
+            //     const latRes=document.createElement('div');
+            //     latRes.classList.add('latitude-res');
+            //
+            //
+            //     const lonRes=document.createElement('div')
+            //     if (document.querySelector('h2').innerHTML==='Имитатор потока вызовов') {
+            //         latRes.innerHTML=`Широта, градусы: ${document.getElementById('lat4').value}`;
+            //         lonRes.innerHTML=`Долгота, градусы: ${document.getElementById('lon4').value}`;
+            //     }
+            //     else{
+            //         latRes.innerHTML=`Широта, градусы: ${document.getElementById('lat3').value}`;
+            //         lonRes.innerHTML=`Долгота, градусы: ${document.getElementById('lon3').value}`;
+            //     }
+            //     lonRes.classList.add('long-res');
+            //     const latResInf=document.createElement('div');
+            //     latResInf.classList.add('latitude-res');
+            //     latResInf.innerHTML=`Широта, градусы: ${document.getElementById('lat3').value}`;
+            //     const lonResInf=document.createElement('div')
+            //     lonResInf.innerHTML=`Долгота, градусы: ${document.getElementById('lon3').value}`;
+            //     lonResInf.classList.add('long-res');
+            //     document.querySelector('.information_request').append(latResInf);
+            //     document.querySelector('.information_request').append(lonResInf);
+            //     document.getElementById('response3').append(latRes);
+            //     document.getElementById('response3').append(lonRes);
+            //
+            // }
+            // else
+            // {
+            //     ImitatorUtils.createResponseOld(result,data);
+            //     const datesStartTime=new Date();
+            //     document.getElementById('response3').innerHTML+=`<br><div class="header-log">Сеанс связи:</div>`;
+            //     document.getElementById('response3').innerHTML+=`<div>СУРР: Сеанс разрешен</div>`;
+            //     document.getElementById('response3').innerHTML+=`<div>СУРР: Время ответа от СУРР: ${datesStartTime.toLocaleString()}</div>`;
+            //     if (document.querySelector('.duplex-checkbox').checked) {
+            //         let valDuplex=document.querySelector('.duplex-checkbox').value;
+            //         ImitatorUtils.postOcFrREs(result.satellite_id)
+            //             .then(respons=>{
+            //                 ImitatorUtils.createDataSessionCommunicationsOld(result,respons,datesStartTime,data,countSession);
+            //             });
+            //     }
+            //     else if(document.querySelector('.simplex-checkbox').checked){
+            //         ImitatorUtils.postOcFrREs(result.satellite_id).then(response=>{
+            //             ImitatorUtils.createDataSessionCommunicationsOld(result,response,datesStartTime,data,countSession);
+            //         });
+            //     }
+            //     return result;
+            // }
+
         } catch (error) {
             console.error("Error:", error);
         }

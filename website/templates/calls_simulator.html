@@ -15,97 +15,103 @@
             <div class="column2_com">
                 <div class="csus">Эмулятор СОВ</div>
                 <br>
-                <div class="div-abonent">Данные абонента</div>
+                <div class="div-abonent">Данные абонентов</div>
                 <br>
-                <div class="data-abonent">
-                    <span>Вызывающий абонент:</span> <select  class="select" name="abonents" id="abonent-select">
-                    <option value="0">Выберите Абонента</option>
-                    <option value="1">Абонент 1</option>
-                    <option value="2">Абонент 2</option>
-                </select>
-                    <span>Номер телефона: </span><span class="number hide">89000000001</span><span class="number hide">89000000001</span><span class="number hide">89000000002</span>
+                <div id="count-abs">
+                    <span>Выберите количество абонентов:</span>
                 </div>
-                <div class="data-abonent">
-                    <span>Вызываемый абонент:</span> <select class="select" name="abonents-rec" id="abonent-select-rec">
-                    <option value="0">Выберите Абонента</option>
-                    <option value="1">Абонент 1</option>
-                    <option value="2">Абонент 2</option>
-                </select>
-                    <span>Номер телефона: </span><span class="number-rec hide">89000000001</span><span class="number-rec hide">89000000001</span><span class="number-rec hide">89000000002</span>
-                </div>
-                <div class="data-abonent">
-                    <span>Принадлежность абонента к МСПСС Гонец_М1: </span>
-                    <select class="select" name="affiliation" id="affiliation-id" disabled>
-                        <option>да</option>
-                    </select>
-                </div>
+                <div class="test-ab"></div>
+<!--                <div class="data-abonent">-->
+<!--                    <span>Вызывающий абонент:</span> <select  class="select" name="abonents" id="abonent-select">-->
+<!--                    <option value="0">Выберите Абонента</option>-->
+<!--                    <option value="1">Абонент 1</option>-->
+<!--                    <option value="2">Абонент 2</option>-->
+<!--                </select>-->
+<!--                    <span>Номер телефона: </span><span class="number hide">89000000001</span><span class="number hide">89000000001</span><span class="number hide">89000000002</span>-->
+<!--                </div>-->
+<!--                <div class="data-abonent">-->
+<!--                    <span>Вызываемый абонент:</span> <select class="select" name="abonents-rec" id="abonent-select-rec">-->
+<!--                    <option value="0">Выберите Абонента</option>-->
+<!--                    <option value="1">Абонент 1</option>-->
+<!--                    <option value="2">Абонент 2</option>-->
+<!--                </select>-->
+<!--                    <span>Номер телефона: </span><span class="number-rec hide">89000000001</span><span class="number-rec hide">89000000001</span><span class="number-rec hide">89000000002</span>-->
+<!--                </div>-->
+<!--                <div class="data-abonent">-->
+<!--                    <span>Принадлежность абонента к МСПСС Гонец_М1: </span>-->
+<!--                    <select class="select" name="affiliation" id="affiliation-id" disabled>-->
+<!--                        <option>да</option>-->
+<!--                    </select>-->
+<!--                </div>-->
 
-                <div class="data-abonent">
-                    <span>Размещение абонента : </span>
-                    <span>Страна: </span>
-                    <select class="select" name="subscriber-placement" id="subscriber-placement-id" disabled>
-                        <option>Россия</option>
-                    </select>
-                    <span>Регион: </span>
-                    <select class="select" disabled>
-                        <option>Все регионы</option>
-                    </select>
+<!--                <div class="data-abonent">-->
+<!--                    <span>Размещение абонента : </span>-->
+<!--                    <span>Страна: </span>-->
+<!--                    <select class="select" name="subscriber-placement" id="subscriber-placement-id" disabled>-->
+<!--                        <option>Россия</option>-->
+<!--                    </select>-->
+<!--                    <span>Регион: </span>-->
+<!--                    <select class="select" disabled>-->
+<!--                        <option>Все регионы</option>-->
+<!--                    </select>-->
 
-                </div>
+<!--                </div>-->
                 <br>
-                <div class="data-abonent">
-                    <span>Задать координаты абонента :</span>
-                    <div class="radio-dvi">
-                        <br>
-                        <input type="radio" value="1" name="radio-coord" class="time_call">
-                        <span>Вручную</span>
-                        <input type="radio" value="1" name="radio-coord" class="time_call coord-rand" checked>
-                        <span>Случайным образом</span>
-                        <img class="re-date" src="../static/img/re.png">
-                    </div>
-                </div>
+<!--                <div class="data-abonent">-->
+<!--                    <span>Задать координаты абонента :</span>-->
+<!--                    <div class="radio-dvi">-->
+<!--                        <br>-->
+<!--                        <input type="radio" value="1" name="radio-coord" class="time_call">-->
+<!--                        <span>Вручную</span>-->
+<!--                        <input type="radio" value="1" name="radio-coord" class="time_call coord-rand" checked>-->
+<!--                        <span>Случайным образом</span>-->
+<!--                        <img class="re-date" src="../static/img/re.png">-->
+<!--                    </div>-->
+<!--                </div>-->
                 <br>
-                <div class="data-abonent">
-                    <span>Задать время вызова :</span>
-                    <div class="radio-dvi">
 
-                        <br>
-                        <input type="radio" value="1" name="radio-timer" class="timer_call-current" checked>
-                        <span>Использовать текущее время</span>
-
-                        <br>
-                        <br>
-                        <span id="typeTime">Отображается Московское время</span>
-                        <br>
-                        <input type="radio" value="1" name="radio-timer" class="timer_call-self">
-                        <span>Вручную</span>
-
-                        <input type="time" id="start-time" name="trip-start-time" value="" step="2" />
-                        <input type="date" id="start" name="trip-start" value=""/>
-                    </div>
-                </div>
                 <br>
-                <div class="data-abonent">
-                    <div>Координаты вызывающего абонента:</div>
-                    <label for="lat3">Широта, градусы</label>
-                    <input id="lat3" type="number" value="51">
-                    <label for="lon3">Долгота, градусы</label>
-                    <input id="lon3" type="number" value="39">
-                    <!--            <span>Минимальная продолжительность сеанса,сек</span>-->
-                    <!--            <input id="min-call-time" type="text" value="30">-->
-                </div>
-                <div class="data-abonent">
-                    <div>Координаты вызываемого абонента:</div>
-                    <label for="lat6">Широта, градусы</label>
-                    <input id="lat6" type="number" value="52">
-                    <label for="lon6">Долгота, градусы</label>
-                    <input id="lon6" type="number" value="40">
-                    <!--            <span>Минимальная продолжительность сеанса,сек</span>-->
-                    <!--            <input id="min-call-time" type="text" value="30">-->
-                </div>
+<!--                <div class="data-abonent">-->
+<!--                    <div>Координаты вызывающего абонента:</div>-->
+<!--                    <label for="lat3">Широта, градусы</label>-->
+<!--                    <input id="lat3" type="number" value="51">-->
+<!--                    <label for="lon3">Долгота, градусы</label>-->
+<!--                    <input id="lon3" type="number" value="39">-->
+<!--                    &lt;!&ndash;            <span>Минимальная продолжительность сеанса,сек</span>&ndash;&gt;-->
+<!--                    &lt;!&ndash;            <input id="min-call-time" type="text" value="30">&ndash;&gt;-->
+<!--                </div>-->
+<!--                <div class="data-abonent">-->
+<!--                    <div>Координаты вызываемого абонента:</div>-->
+<!--                    <label for="lat6">Широта, градусы</label>-->
+<!--                    <input id="lat6" type="number" value="52">-->
+<!--                    <label for="lon6">Долгота, градусы</label>-->
+<!--                    <input id="lon6" type="number" value="40">-->
+<!--                    &lt;!&ndash;            <span>Минимальная продолжительность сеанса,сек</span>&ndash;&gt;-->
+<!--                    &lt;!&ndash;            <input id="min-call-time" type="text" value="30">&ndash;&gt;-->
+<!--                </div>-->
                 <br>
                 <div class="div-abonent">Параметры вызова</div>
                 <br>
+                <div class="data-abonent">
+                    <span>Время вызова :</span>
+                    <div class="radio-dvi">
+
+                        <br>
+                        <input id="now_time" type="radio" value="1" name="radio-timer" class="timer_call-current" checked>
+                        <label for="now_time">Использовать текущее время</label>
+
+                        <br>
+                        <br>
+
+
+                        <input  id="msk" type="radio" value="1" name="radio-timer" class="timer_call-self">
+                        <label for="msk">Вручную </label>
+                        <label for="start-time">(Московское время)</label>
+                        <input type="time" id="start-time" name="trip-start-time" value="" step="2" />
+
+                        <input type="date" id="start" name="trip-start" value=""/>
+                    </div>
+                </div>
                 <div class="data-abonent">
 
                     <label for="min-time-dur">Длительность сеанса связи: от,сек</label>
@@ -115,28 +121,21 @@
                     <!--            <span>Минимальная продолжительность сеанса,сек</span>-->
                     <!--            <input id="min-call-time" type="text" value="30">-->
                 </div>
-                <div class="radio-dvi">
-                    <span>Продолжительность сеанса:</span>
-                    <input type="radio" value="1" name="radio-time" class="time_call-rand" checked>
-                    <span>Случайная</span>
-                    <input type="radio" value="1" name="radio-time" class="time_call-max" >
-                    <span>Максимальная</span>
-
-
-
-
-
-                </div>
+<!--                <div class="radio-dvi">-->
+<!--                    <span>Продолжительность сеанса:</span>-->
+<!--                    <input type="radio" value="1" name="radio-time" class="time_call-rand" checked>-->
+<!--                    <span>Случайная</span>-->
+<!--                    <input type="radio" value="1" name="radio-time" class="time_call-max" >-->
+<!--                    <span>Максимальная</span>-->
+<!--                </div>-->
                 <div class="radio-dvi">
                     <span>Вид связи:</span>
                     <!-- <input type="radio" value="1" name="radio" class="simple-checkbox">
                     <span>Симплекс передача</span> -->
-                    <input type="radio" value="1" name="radios" class="simplex-checkbox">
-                    <span>Симплекс </span>
-                    <input type="radio" value="2" name="radios" class="duplex-checkbox" checked>
-                    <span>Дуплекс</span>
-
-
+                    <input id='simplex' type="radio" value="1" name="radios" class="simplex-checkbox">
+                    <label for="simplex">Симплекс </label>
+                    <input id='duplex' type="radio" value="2" name="radios" class="duplex-checkbox" checked>
+                    <label for="duplex">Дуплекс</label>
                 </div>
 
             </div>
@@ -160,12 +159,13 @@
           font-size: calc(1.2rem);">Характеристики Абонента:</div>
           <div id="latitude-res">Широта, градусы: </div>
           <div id="long-res">Долгота, градусы: </div> -->
-            <br>
+
         </span>
 
     </div>
     <div class="information_request">
         <span class="csus">Шлюз взаимодействия СОВ-СУРР</span>
+        <div id="containers_calls"></div>
     </div>
 
 </div>
