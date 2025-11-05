@@ -1,3 +1,4 @@
+
 .content {
     height: calc(76vh);
     /* margin: 100px auto; */
@@ -30,6 +31,9 @@
     border-width: 2px;
     font-size: calc(1rem);
     font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+#ids-Ka,#ka-Data{
     font-family: Arial, sans-serif;
 }
 .select{
@@ -621,9 +625,14 @@ body {
     margin-right: 0%;
 }
 .header-log{
-    font-size: calc(1.2rem);
+    font-size: calc(1.2rem);;
     margin-bottom: 5px;
     
+}
+.headers-log{
+    font-size: calc(1.2rem)!important;;
+    margin-bottom: 5px;
+
 }
 #typeTime{
     padding-left: 21%;

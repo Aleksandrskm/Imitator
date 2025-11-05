@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
             ImitatorUtils.archivatePlanSv(id).then(res=>{
                 arrIdsSvSenas=[];
-                document.getElementById('containers_calls').innerHTML+=`<div class="header-log">СУРР:Сеанс связи под номером:${id} заархивирован</div><div>СОВ:Время завершения запроса${new Date().toLocaleString()}</div> <br>`;
+                document.getElementById('containers_calls').innerHTML+=`<div class="header-log">СУРР:Сеанс связи под номером:${id} заархивирован</div><div>СОВ:Время завершения запроса ${new Date().toLocaleString()}</div> <br>`;
                 }
             );
         })

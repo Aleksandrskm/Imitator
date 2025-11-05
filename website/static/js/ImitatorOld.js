@@ -2,9 +2,98 @@
 import {Utils} from "./Utils.js";
 import {ImitatorUtils} from "./ImitatorUtils.js";
 import {Loader} from "./Loader.js";
+function renderLogChannels(planData,abonents){
+    const containerElement = document.querySelector("#containers_calls");
+    const callElement = document.createElement("div");
+    const logElement = document.createElement("div");
+    const elemResponse = document.querySelector('#response3');
+    const headerLogElement = document.createElement("div");
+    headerLogElement.textContent=`Вызов:`
+    headerLogElement.classList.add("headers-log");
+    logElement.textContent = `СУРР:ID созданного плана сеанса связи: ${planData.ID_SV_ZAPROS_SEANS}`;
+    callElement.append(headerLogElement)
+    callElement.append(logElement);
+    planData.details.forEach((detail,index) => {
+        const channelElement = document.createElement("div");
+        channelElement.textContent =`СУРР: Абонент:${abonents[index].abonent}, КА:${abonents[index].KA}, РСС:${abonents[index].rss}, Антенна:${abonents[index].ant},
+        Время начала сеанса:${abonents[index].dateStart}, Канал на передачу: ${detail.CANAL}, Тайм слот на передачу: ${detail.TIME_SLOT},
+        Канал на прием: ${detail.CANAL_PR}, Тайм слот на прием: ${detail.TIME_SLOT_PR}`;
+        callElement.append(channelElement);
+    })
+    containerElement.append(callElement)
+    elemResponse.append(callElement.cloneNode(true));
+}
+function endSvSeans(channels,timer,handler){
+    clearTimeout(timer);
+    if (handler) {
+        document.querySelector('#task-btn_cansel').removeEventListener('click', handler);
+    }
+    ImitatorUtils.archivatePlanSv(channels.ID_SV_ZAPROS_SEANS).then(()=>{
+        renderEndLog(channels.ID_SV_ZAPROS_SEANS);
+    })
+}
+function renderEndLog(idSvPlan){
+    const containerElement = document.querySelector("#containers_calls");
+    const callElement = document.createElement("div");
+    const logElement = document.createElement("div");
+    const logElementDate = document.createElement("div");
+    const elemResponse = document.querySelector('#response3');
+    const headerLogElement = document.createElement("div");
+    headerLogElement.textContent=`Завершение:`
+    headerLogElement.classList.add("headers-log");
+    logElement.textContent = `СУРР:Сеанс связи ${idSvPlan} завершен `;
+    logElementDate.textContent=`СОВ:Время завершения запроса ${new Date().toLocaleString()}`;
+    callElement.append(headerLogElement)
+    callElement.append(logElement);
+    callElement.append(logElementDate);
+    containerElement.append(callElement)
+    elemResponse.append(callElement.cloneNode(true));
+}
+function renderErrorLog(){
+    const containerElement = document.querySelector("#containers_calls");
+    const callElement = document.createElement("div");
+    const logElement = document.createElement("div");
+    const logElementDate = document.createElement("div");
+    const elemResponse = document.querySelector('#response3');
+    const headerLogElement = document.createElement("div");
+    headerLogElement.textContent=`Завершение:`
+    headerLogElement.classList.add("headers-log");
+    logElement.textContent = `СУРР:Произошла ошибка на стороне сервера `;
+    logElementDate.textContent=`СОВ:Время завершения запроса ${new Date().toLocaleString()}`;
+    callElement.append(headerLogElement)
+    callElement.append(logElement);
+    callElement.append(logElementDate);
+    containerElement.append(callElement)
+    elemResponse.append(callElement.cloneNode(true));
 
+}
+function renderErrorLogRSS(){
+    const containerElement = document.querySelector("#containers_calls");
+    const callElement = document.createElement("div");
+    const logElement = document.createElement("div");
+    const logElementDate = document.createElement("div");
+    const elemResponse = document.querySelector('#response3');
+    const headerLogElement = document.createElement("div");
+    headerLogElement.textContent=`Завершение:`
+    headerLogElement.classList.add("headers-log");
+    logElement.textContent = `СУРР:Нет доступных РСС для однного из абонентов`;
+    logElementDate.textContent=`СОВ:Время завершения запроса ${new Date().toLocaleString()}`;
+    callElement.append(headerLogElement)
+    callElement.append(logElement);
+    callElement.append(logElementDate);
+    containerElement.append(callElement)
+    elemResponse.append(callElement.cloneNode(true));
+
+}
 document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('h2').innerHTML=='Имитатор одиночных вызовов') {
+        function addSecondsToDate(dateString, seconds) {
+            const date = new Date(dateString);
+            date.setSeconds(date.getSeconds() + seconds);
+
+            const isoString = date.toISOString();
+            return isoString.replace('Z', '+00:00');
+        }
         ImitatorUtils.getInformationAboutAllAbonents().then((data)=>{
             console.log(data);
             Utils.createCountAbs(data)
@@ -138,43 +227,62 @@ document.addEventListener('DOMContentLoaded', () => {
             loader.show('Загрузка данных с сервера');
             const select=document.querySelector('#abonent-select-count')
             const arrDatAbs=[]
-            arrDataKA.forEach((data,index)=>{
-                ImitatorUtils.calculateFirstAvailableIntervalOld(data,{}).then((res)=>{
-                    resultArr.push(res)
+            // Создаем массив промисов для всех вызовов calculateFirstAvailableIntervalOld
+            const promises = arrDataKA.map((data, index) =>
+                ImitatorUtils.calculateFirstAvailableIntervalOld(data, {})
+            );
+
+            const minDurationKas=[]
+            let minDurationInSec=0;
+            const elemContainer = document.querySelector('#containers_calls');
+            const elemResponse = document.querySelector('#response3');
+            const elemLogs = document.createElement('div');
+            elemLogs.innerHTML = `<div style="font-size: calc(1.2rem);">Запрос:</div><div>СОВ:Инициация создания плана связи </div>
+                        <div>СОВ:Время инициирования запроса ${new Date().toLocaleString()}</div>`;
+            elemContainer.append(elemLogs);
+            elemResponse.append(elemLogs.cloneNode(true));
+            Promise.all(promises)
+                .then((results) => {
+                    console.log('results',results);
+                    resultArr.push(...results);
                     loader.close();
-                    document.getElementById('response3').style.display='block';
+                    document.getElementById('response3').style.display = 'block';
                     document.getElementById("task-btn_cansel").disabled = false;
-
-                    if (select[select.selectedIndex].innerHTML==resultArr.length){
+                    if (select[select.selectedIndex].innerHTML == results.length) {
                         console.log(resultArr);
-                        const chousenKA= [];
-                        resultArr.forEach((data,index)=>
-                        {
-                            if(data['chosen_satellite']['satellite_id']){
-                                chousenKA.push(data['chosen_satellite']['satellite_id'])
+                        const chousenKA = [];
+                        resultArr.forEach((data) => {
+                            if (data['chosen_satellite']?.['satellite_id']) {
+                                chousenKA.push(data['chosen_satellite']['satellite_id']);
                             }
+                            if (data['chosen_satellite']?.['datetime_period']?.['duration_in_sec'])
+                            {
 
-                        })
-                        const latData=[];
-                        const lonData=[];
-                        const absData=[];
-                        const absIds=[]
-                        document.querySelectorAll('select.abs').forEach(select=>{
-                            absIds.push(select[select.selectedIndex].value)
+                                minDurationKas.push(Number(data['chosen_satellite']['datetime_period']['duration_in_sec']));
+                            }
+                        });
+                        const minDur=Math.min(...minDurationKas);
 
+                        console.log('minDurationKas',minDurationKas);
+                        console.log('min',minDur);
+                        minDurationInSec = minDur;
+                        const latData = [];
+                        const lonData = [];
+                        const absData = [];
+                        const absIds = [];
+
+                        document.querySelectorAll('select.abs').forEach(select => {
+                            absIds.push(select[select.selectedIndex].value);
                             absData.push(select[select.selectedIndex].innerHTML);
                         });
-
-                        document.querySelectorAll('input.input_abs').forEach((select,index)=>{
-                            if (index%2==0){
+                        document.querySelectorAll('input.input_abs').forEach((select, index) => {
+                            if (index % 2 == 0) {
                                 latData.push(select.value);
-                                console.log(select.value)
-                            }
-                            else {
+                            } else {
                                 lonData.push(select.value);
                             }
-
                         });
+
                         let formattedDate;
                         let dataBeg;
                         if (document.querySelector('.timer_call-current').checked) {
@@ -194,85 +302,91 @@ document.addEventListener('DOMContentLoaded', () => {
                             const duration = parseInt(document.querySelector('#max-time-dur').value) * 1000;
                             formattedDate = new Date(startDate.getTime() + duration).toISOString().replace('Z', '+00:00');
                         }
-                        const callers=[];
-                        absData.forEach((ab,index)=>{
-                            console.log(absData)
-                            const obj={}
-                            obj.name = ab;
-                            obj.lat=latData[index];
-                            obj.lon=lonData[index];
-                            obj.radius=2500;
+
+                        const callers = [];
+                        absData.forEach((ab, index) => {
+                            const obj = {
+                                name: ab,
+                                lat: latData[index],
+                                lon: lonData[index],
+                                radius: 2500
+                            };
                             callers.push(obj);
-                        })
+                        });
+
                         console.log(callers);
-                        const data =
-                            {
-                                "params": {
-                                    "start_datetime_iso": dataBeg,
-                                    "end_datetime_iso": formattedDate,
-                                    "dates_delta_in_sec": 15,
-                                    "min_session_time_in_sec": document.querySelector('#min-time-dur').value,
-                                    "acceptable_session_time_in_sec": 100
-                                },
-                                "callers": callers,
-                                'ka_id_list':[...chousenKA]
-                            }
 
-                            console.log(absIds)
+                        const data = {
+                            "params": {
+                                "start_datetime_iso": dataBeg,
+                                "end_datetime_iso": formattedDate,
+                                "dates_delta_in_sec": 15,
+                                "min_session_time_in_sec": document.querySelector('#min-time-dur').value,
+                                "acceptable_session_time_in_sec": 100
+                            },
+                            "callers": callers,
+                            'ka_id_list': [...chousenKA]
+                        }
 
+                        console.log(absIds);
 
-                        callers.forEach((call,index)=>{
-                            let query=`SELECT * FROM RSS_KA WHERE ID_KA = ${data['ka_id_list'][index]} AND DATA_TIME_IN <= '${dataBeg}' AND DATA_TIME_OUT > '${dataBeg}' AND DEISTV = 0`
-                            Utils.selectQuery(query).then((res)=>{
-                                const bodyDataAbs={
+                        // Создаем промисы для SQL запросов
+                        const sqlPromises = data['ka_id_list'].map((kaId, index) => {
+                            const query = `SELECT * FROM RSS_KA WHERE ID_KA = ${kaId} AND DATA_TIME_IN <= '${dataBeg}' AND DATA_TIME_OUT > '${dataBeg}' AND DEISTV = 0`;
+                            return Utils.selectQuery(query).then((res) => {
+                                console.log('res',res);
+                                if (res.length>0){
+                                    const bodyDataAbs = {
+                                        abonent: +absIds[index],
+                                        KA: kaId,
+                                        dateStart: dataBeg,
+                                        ant: res[0][8],
+                                        rss: res[0][9],
+                                        dateEnd: addSecondsToDate(dataBeg,minDur),
+                                    };
+                                    console.log('bodyDataAbs',bodyDataAbs);
+                                    return bodyDataAbs;
                                 }
-                                bodyDataAbs.abonent=+absIds[index];
-                                bodyDataAbs.KA=data['ka_id_list'][index];
-                                bodyDataAbs.dateStart=dataBeg;
-                                bodyDataAbs.ant= res[0][8];
-                                bodyDataAbs.rss=res[0][9]
-                                arrDatAbs.push(bodyDataAbs)
 
-                        })
 
-                            console.log(arrDatAbs)})
-                            console.log(data)
-                         const elemContainer=document.querySelector('#containers_calls');
-                        const  elemResponse=document.querySelector('#response3');
-                         const elemLogs=document.createElement('div');
-                         elemLogs.innerHTML=`<div style="font-size: calc(1.2rem);">Запрос:</div><div>СОВ:Инициация создания плана связи </div>
-                         <div>СОВ:Время инициирования запроса ${new Date().toLocaleString()}</div>`;
-                         elemContainer.append(elemLogs);
-                        elemResponse.append(elemLogs.cloneNode(true));
-                         // ImitatorUtils.addPlanSv(data).then(id=>
-                         // {
-                         //    if (id!==undefined ){
-                         //        const elemLogs=document.createElement('div');
-                         //        elemLogs.innerHTML=`<div >СУРР:План сеанса связи под номером ${id} успешно создан </div>
-                         //    <div>СОВ:Время ответа от СУРР ${new Date().toLocaleString()}</div><br>`
-                         //        elemContainer.append(elemLogs);
-                         //        elemResponse.append(elemLogs.cloneNode(true));
-                         //        ImitatorUtils.getDetailsPlanSv(id).then((data)=>{
-                         //            const elemLogs=document.createElement('div');
-                         //            elemLogs.innerHTML=`<div style="font-size: calc(1.2rem);">Вызов: </div>`
-                         //            elemContainer.append(elemLogs);
-                         //            elemResponse.append(elemLogs.cloneNode(true));
-                         //
-                         //        })
-                         //    }
-                         //    else {
-                         //        const elemLogs=document.createElement('div');
-                         //        elemLogs.innerHTML=`<div >СУРР:План сеанса связи не создан </div>
-                         //    <div>СОВ:Время ответа от СУРР ${new Date().toLocaleString()}</div><br>`
-                         //        elemContainer.append(elemLogs);
-                         //        elemResponse.append(elemLogs.cloneNode(true));
-                         //    }
-                         //     console.log(id)
-                         // })
+                            });
+                        });
+
+                        // Обрабатываем все SQL запросы параллельно
+                        return Promise.all(sqlPromises);
                     }
+                })
+                .then(async (sqlResults) => {
+                    if (!sqlResults.includes(undefined)) {
+                        arrDatAbs.push(...sqlResults);
+                        console.log('Все запросы выполнены успешно');
+                        console.log(sqlResults);
+                        console.log('minDurationInSec',minDurationInSec);
+                        const channels = await ImitatorUtils.addPlanSessionChannels(sqlResults)
+                        const timerSeans=setTimeout(()=>{
+                            console.log('endInterval')
+                            endSvSeans(channels, timerSeans, bindEndSv)
+                            removeEventListener('click', bindEndSv)
+                        },minDurationInSec*1000);
+                        const bindEndSv = () => {
+                            endSvSeans(channels, timerSeans, bindEndSv);
+                        };
+                        document.querySelector('#task-btn_cansel').addEventListener('click', bindEndSv,{once: true});
+                        renderLogChannels(channels,sqlResults)
+                        console.log('channels',channels)
 
+                    }
+                    else {
+                        console.log('Нет РСС');
+                        renderErrorLogRSS()
+                    }
+                })
+                .catch((error) => {
+                    console.error('Произошла ошибка на стороне сервера:', error);
+                    renderErrorLog()
+                    loader.close();
+                    document.getElementById("task-btn_cansel").disabled = false;
                 });
-            })
 
         });
 

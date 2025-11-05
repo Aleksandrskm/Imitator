@@ -7,7 +7,7 @@ export  class ImitatorUtils{
      */
     static async  postActiveSession(data) {
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/CommunicationAvailability/AddActiveSession?ist=71`, {
+            const response = await fetch(`http://${Utils.getUrl()}/CommunicationAvailability/AddActiveSession?ist=71`, {
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
@@ -22,14 +22,33 @@ export  class ImitatorUtils{
             console.error("Error:", error);
         }
     }
-
-
+    /**
+     * Рассчитать план сеанса связи для СОВ-СУРР с получением каналов связи
+     * @param  {Object} data - данные для создания сеанса связи.
+     */
+    static  async addPlanSessionChannels(data) {
+        try {
+            const response = await fetch(`http://${Utils.getUrl()}/plan_sv/calculate_communication_session_plan_for_SOV_SURR`, {
+                method: "POST", // or 'PUT'
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Source":71
+                },
+                body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            console.log("Success:", result);
+            return result;
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
     /**
      * Получить информацию обо всех абонентах.
      */
     static async  getInformationAboutAllAbonents() {
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/CommunicationAvailability/GetInformationAboutAllAbonents?ist=71`, {
+            const response = await fetch(`http://${Utils.getUrl()}/CommunicationAvailability/GetInformationAboutAllAbonents?ist=71`, {
                 method: "GET", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
@@ -55,7 +74,7 @@ export  class ImitatorUtils{
      */
     static async  addPlanSv(body,arrIdsSvSenas,rusKeys,rusKeuAll,flag){
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/plan_sv/calc?ist=71`, {
+            const response = await fetch(`http://${Utils.getUrl()}/plan_sv/calc?ist=71`, {
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
@@ -143,7 +162,7 @@ export  class ImitatorUtils{
      */
     static async  archivatePlanSv(idSvZaprosSeans){
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/plan_sv/${idSvZaprosSeans}/archivate`, {
+            const response = await fetch(`http://${Utils.getUrl()}/plan_sv/${idSvZaprosSeans}/archivate`, {
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
@@ -167,7 +186,7 @@ export  class ImitatorUtils{
      */
     static async  getDetailsPlanSv(idSvZaprosSeans){
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/plan_sv/${idSvZaprosSeans}/details?mode=active`, {
+            const response = await fetch(`http://${Utils.getUrl()}/plan_sv/${idSvZaprosSeans}/details?mode=active`, {
                 method: "GET", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
@@ -191,7 +210,7 @@ export  class ImitatorUtils{
      */
     static async  addArchivalSession(id,dataEnd,timeSeans,timeCall,idSeansRes){
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/CommunicationAvailability/AddArchivalSession?ID=${id}&ist=71
+            const response = await fetch(`http://${Utils.getUrl()}/CommunicationAvailability/AddArchivalSession?ID=${id}&ist=71
     &Data_End=${dataEnd}&Time_Seans=${timeSeans}&Time_Razg=${timeCall}&Id_Seans_Rez=${idSeansRes}`, {
                 method: "POST", // or 'PUT'
                 headers: {
@@ -214,7 +233,7 @@ export  class ImitatorUtils{
      */
     static async  postRelaeseFrRes(data,stId){
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/CommunicationAvailability/ReleaseFrequencyResource?satellite_id=${stId}&ist=71`, {
+            const response = await fetch(`http://${Utils.getUrl()}/CommunicationAvailability/ReleaseFrequencyResource?satellite_id=${stId}&ist=71`, {
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
@@ -971,7 +990,7 @@ export  class ImitatorUtils{
      */
     static async  calculateFirstAvailableInterval(data,countsSession){
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/sov_surr/calc_plan_svyazi_sov?ist=71`, {
+            const response = await fetch(`http://${Utils.getUrl()}/sov_surr/calc_plan_svyazi_sov?ist=71`, {
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
@@ -1235,7 +1254,7 @@ export  class ImitatorUtils{
      */
     static async endSovSeans(data){
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/sov_surr/Delete_plan_sov?ist=71`, {
+            const response = await fetch(`http://${Utils.getUrl()}/sov_surr/Delete_plan_sov?ist=71`, {
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
@@ -1257,7 +1276,7 @@ export  class ImitatorUtils{
      */
     static async  postOcFrREs(stId,type,reception,transmission){
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/CommunicationAvailability/OccupyFrequencyResource?satellite_id=${stId}&ist=71`, {
+            const response = await fetch(`http://${Utils.getUrl()}/CommunicationAvailability/OccupyFrequencyResource?satellite_id=${stId}&ist=71`, {
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
@@ -1283,7 +1302,7 @@ export  class ImitatorUtils{
      */
     static  async  calculateFirstAvailableIntervalOld(data,countSession){
         try {
-            const response = await fetch(`http://${Utils.getTestUrl()}/CommunicationAvailability/CalculateFirstAvailableInterval?ist=71`, {
+            const response = await fetch(`http://${Utils.getUrl()}/CommunicationAvailability/CalculateFirstAvailableInterval?ist=71`, {
                 method: "POST", // or 'PUT'
                 headers: {
                     "Content-Type": "application/json",
@@ -1293,6 +1312,12 @@ export  class ImitatorUtils{
 
             const result = await response.json();
             console.log("Success:", result);
+            if (response.ok) {
+                console.log("Success:", response.ok);
+                return result;
+            }
+
+
             // if (result.detail || Date.parse((new Date((result.start_datetime_iso)))<Date.parse(new Date())))  {
             //     console.log(document.getElementById('max-time-dur').value);
             //     const select = document.getElementById('abonent-select');
@@ -1356,7 +1381,7 @@ export  class ImitatorUtils{
             //     }
             //     return result;
             // }
-            return result;
+
         } catch (error) {
             console.error("Error:", error);
         }
