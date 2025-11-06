@@ -18,7 +18,7 @@ export  class Utils{
      static async selectQuery(query){
         try {
             console.log((query))
-            const response =await fetch(`http://${this.getTestUrl()}/db/custom_select_query`,{
+            const response =await fetch(`http://${this.getUrl()}/db/custom_select_query`,{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
