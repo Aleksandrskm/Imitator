@@ -70,14 +70,23 @@
                         <input type="date" id="start" name="trip-start" value=""/>
                     </div>
                 </div>
-        <div class="radio-dvi">
-            <span>Продолжительность сеанса:</span>
-            <input type="radio" value="1" name="radio-time" class="time_call-rand">
-            <span>Случайная</span>
-            <input type="radio" value="1" name="radio-time" class="time_call-max" checked>
-            <span>Максимальная</span>
-            
-        </div>
+<!--        <div class="radio-dvi">-->
+<!--            <span>Продолжительность сеанса:</span>-->
+<!--            <input type="radio" value="1" name="radio-time" class="time_call-rand">-->
+<!--            <span>Случайная</span>-->
+<!--            <input type="radio" value="1" name="radio-time" class="time_call-max" checked>-->
+<!--            <span>Максимальная</span>-->
+<!--            -->
+<!--        </div>-->
+                <div class="data-abonent">
+
+                    <label for="min-time-dur">Длительность сеанса связи: от,сек</label>
+                    <input id="min-time-dur" type="number" value="30">
+                    <label for="max-time-dur">до,сек</label>
+                    <input id="max-time-dur" type="number" value="300">
+                    <!--            <span>Минимальная продолжительность сеанса,сек</span>-->
+                    <!--            <input id="min-call-time" type="text" value="30">-->
+                </div>
         <div class="radio-dvi">
             <span>Вид связи:</span>
             <!-- <input type="radio" value="1" name="radio" class="simple-checkbox">
